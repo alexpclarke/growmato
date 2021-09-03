@@ -4,20 +4,15 @@
 #include <ClickEncoder.h>
 #include <TimerOne.h>
 
-// #include <Vector.h>
-
-
-#define MENU_SIZE 5
+#define MAX_LABEL_LENGTH 14
 #define MIN_TEMP 0
 #define MAX_TEMP 100
 
 class MenuItem;
-class MainMenu;
-class SetTemp;
+class MenuBranch;
+class MenuLeaf;
 
 LiquidCrystal_I2C* lcd;
 ClickEncoder* encoder;
 int16_t last;
 MenuItem* currentMenuItem;
-
-int16_t temp;

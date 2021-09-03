@@ -1,28 +1,31 @@
 class MenuItem {
   protected:
-    // MenuItem* parent;
-    MenuItem** children;
-    String label;
-    int num_children = 0;
+    MenuItem* parent;
   public:
-    MenuItem(int num, String str) {
-      label = str;
-      MenuItem* arr[num];
-      children = arr;
+    String label;
+
+    MenuItem() {
+      label = "Default Label";
     };
 
-    void addChild(MenuItem* ptr) {
-      // ptr->setParent(this);
-      children[num_children] = ptr;
-      num_children++;
-    }
+    MenuItem(String label_) {
+      label = label_;
+    };
 
-    String getLabel(void) {return label;}
+    String getLabel(void) {
+      // Serial.println("L0");
+      // Serial.println((uint32_t)this);
+      // Serial.println((uint32_t)&label);
 
-    // void setParent(MenuItem* ptr) {parent = ptr;};
+      return label;
+    };
 
-    virtual void Print(void) = 0;
-    virtual void Click(void) = 0;
-    virtual void ScrollRight(void) = 0;
+    void setParent(MenuItem* parent_) {
+      parent = parent_;
+    };
+
     virtual void ScrollLeft(void) = 0;
+    virtual void ScrollRight(void) = 0;
+    virtual void Click(void) = 0;
+    virtual void Print(void) = 0;
 };

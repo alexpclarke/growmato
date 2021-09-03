@@ -3,17 +3,23 @@
 using namespace std;
 
 #include "MenuItem.h"
-#include "MainMenu.h"
-#include "SetTemp.h"
+#include "MenuLeaf.h"
+#include "MenuBranch.h"
 
-MainMenu menu0(4, "Main Menu");
-SetTemp menu1(0, "Set Temp");
+void testFunc(void) {
+  Serial.println("test function");
+}
+
+MenuBranch branch0("Test Branch", 4);
+MenuLeaf leaf0("Test Leaf 0", &testFunc, &testFunc, &testFunc, &testFunc);
+MenuLeaf leaf1("Test Leaf 1", &testFunc, &testFunc, &testFunc, &testFunc);
+MenuLeaf leaf2("Test Leaf 2", &testFunc, &testFunc, &testFunc, &testFunc);
 
 void timerIsr() {
   encoder->service();
 }
 
-void setup() {
+void setup(void) {
   // Setup serial for debugging.
   Serial.begin(9600);
 
@@ -22,7 +28,7 @@ void setup() {
   lcd->init();
   lcd->backlight();
 
-  // Initialize the LCD.
+  // Initialize the Encoder.
   encoder = new ClickEncoder(A1, A0, A2);
   encoder->setAccelerationEnabled(false);
 
@@ -30,31 +36,23 @@ void setup() {
   Timer1.initialize(1000);
   Timer1.attachInterrupt(timerIsr); 
 
-
-  // SetTemp menu1;
-  // menu0.addChild(&menu1);
-
+  // Clear the LCD in case there was anything on there already.
   lcd->clear();
 
-  // currentMenuItem = new MainMenu(4, "Main Menu");
-  // currentMenuItem->addChild(SetTemp(0, "Set Temp"));
+  branch0.addChild(&leaf0);
+  branch0.addChild(&leaf1);
+  branch0.addChild(&leaf2);
 
-  
-  menu0.addChild(&menu1);
-
-  currentMenuItem = &menu0;
-  // currentMenuItem->Print();
+  currentMenuItem = &branch0;
+  currentMenuItem->Print();
 }
 
-void loop() {
-  currentMenuItem->Print();
-
+void loop(void) {
   // Read the encoder and apply the scroll.
   last = encoder->getValue();
-  if (last == 1) currentMenuItem->ScrollLeft();
-  else if (last == -1) currentMenuItem->ScrollRight();
-  if (last != 0) currentMenuItem->Print();
-
-  // Delay 50ms.
-  delay(20);
+  if (last == 1) {
+    currentMenuItem->ScrollLeft();
+  } else if (last == -1) {
+    currentMenuItem->ScrollRight();
+  }
 }
