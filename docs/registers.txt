@@ -1,0 +1,32 @@
+r0            return value low
+r1            return value high
+r2            callee-save
+r3            callee-save
+r4            callee-save
+r5            callee-save
+r6            callee-save
+r7            callee-save
+r8            callee-save
+r9            callee-save
+r10           callee-save
+r11           callee-save
+r12           callee-save
+r13           callee-save
+r14           callee-save
+r15           callee-save
+r16           callee-save
+r17           callee-save
+r18           used
+r19           used
+r20           used
+r21           used
+r22     R0
+r23    
+r24     P0
+r25     P1
+r26     XL    
+r27     XH    RESERVED FOR KERNEL
+r28     YL    callee-save
+r29     YH    callee-save
+r30     ZL
+r31     ZH
