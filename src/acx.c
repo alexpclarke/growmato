@@ -1,6 +1,3 @@
-// Author(s):	Alexander Clarke
-// Date:    	2021-04-20
-
 /* ----- Includes ----- */
 
 #include <avr/io.h>
@@ -17,10 +14,6 @@ byte x_thread_mask;
 byte x_disable_status;
 byte x_suspend_status;
 byte x_delay_status;
-
-uint16_t TN_STACK_SIZE[MAX_THREADS] = {
-  T0_STACK_SIZE, T1_STACK_SIZE, T2_STACK_SIZE, T3_STACK_SIZE
-};
 
 // Stack Control.
 STACK_CONTROL stack[MAX_THREADS];
@@ -69,10 +62,12 @@ void x_init(void) {
   // Initialize System Timer.
   init_System_Timer();
 
+
   // Move the system stack to the T0 stack.
-  for (int i = 1; i >= 0; i--) {
-    // Get the value from the system stack and put it into the T0 stack.
-    byte val = *((byte*)SP + i);
+
+  for (int i = 3; i > 0; i--) {
+    // Get the value from the system stack annd put it into the T0 stack.
+    uint8_t val = *((uint8_t*)SP + i);
     *(stack[0].sp) = val;
 
     // Update sp.
@@ -80,7 +75,7 @@ void x_init(void) {
   }
 
   // Update hardware SP to the T0 stack.
-  SP = (int)stack[0].sp;
+  SP = (uint16_t)(stack[0].sp);
 
   // Enable interrupts.
   sei();
@@ -99,7 +94,7 @@ void x_new(uint8_t tid, PTHREAD pthread, bool isEnabled) {
   stack[tid].sp = stack[tid].spBase;
 
   // Copy the function pointer pthread onto tid's stack.
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 3; i++) {
     // Get the value from the pthread and put it into the tid stack.
     *(stack[tid].sp) = pt.addr[i];
 
@@ -171,7 +166,7 @@ void x_enable(uint8_t tid) {
 }
 
 // Returns current value of the system tick counter.
-unsigned long x_gtime(){
+uint32_t x_gtime(){
   uint32_t x_system_counter_;
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
     x_system_counter_ = x_system_counter;

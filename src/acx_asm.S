@@ -1,6 +1,3 @@
-; Author(s):  Alexander Clarke
-; Date:       2021-04-20
-
 #define __SFR_OFFSET 0
 #include <avr/io.h>
 #include "acx.h"
