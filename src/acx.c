@@ -37,10 +37,10 @@ void x_init(void) {
   // Initialize thread status variables.
   x_disable_status = 0b11111110;    // Set all but thread 0 to dissabled.
   x_delay_status = 0b00000000;      // Set all threads to not delayed.
-  x_system_counter = 0x00000000;    // Reset the system counter.
   x_thread_id = 0x00;               // Set thread 0 to be the current thread.
+  x_system_counter = 0x00000000;    // Reset the system counter.
   for (int i = 0; i < MAX_THREADS; i++)
-    x_thread_delay[i] = 0x0000;     // Set each thread's delay to 0.
+    x_thread_delay[i] = 0x0000;     // Reset each thread's delay counter.
 
   // Initialize Stack Control.
   for (int i = 0; i < MAX_THREADS; i++) {
@@ -187,10 +187,4 @@ void init_System_Timer(void) {
 
   // Successfully set the system timer.
   return;
-}
-
-// Converts a val 0-7 to a bit mask.
-uint8_t bit2mask8(uint8_t x) {
-  // Only accept values 0-8
-  return 0x01 << x;
 }
