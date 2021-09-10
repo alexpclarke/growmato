@@ -1,3 +1,6 @@
+; Authors:  Alex Clarke
+; Date:     2021-09-09
+
 #define __SFR_OFFSET 0
 #include <avr/io.h>
 #include "acx.h"
@@ -35,10 +38,8 @@ x_yield:
     ; Check if the canary has been changed.
 
     ; r20 <- *(stack[x_thread_id].spCanary)
-    ; or
-    ; r20 <- *(&stack + (x_thread_id * 6) + 4)
     LDI r26, lo8(stack)
-    LDI r27, hi8(stack)
+    LDI	r27, hi8(stack)
     ADD r26, r18
     ADC r27, r19
     ADD r26, r18
@@ -66,6 +67,7 @@ x_yield:
     MOV r24, r18
     MOV r25, r19
     CALL x_stack_overflow
+
 
     ; Set the current thread's stack pointer to the system stack pointer.
     ; stack[x_thread_id].sp <- SP
@@ -101,35 +103,43 @@ x_yield:
     ; --- Part 2: Schedule the next thread ---
     .global	x_schedule
 x_schedule:
-    ; r20 <- !(x_disable_status | x_suspend_status | x_delay_status)
-    LDS r20, x_disable_status
-    LDS r21, x_suspend_status
-    OR r20, r21
-    LDS r21, x_delay_status
-    OR r20, r21
-    COM r20
+    CLI
 
-    ; r19:r18 <- x_thread_id
+    ; Store the value of our thread ID for later use.
+    ; r18 <- x_thread_id
     LDS r18, x_thread_id
     LDI r19, 0x00
 
     ; Loop through all threads to find the next ready one.
     ; do {
-    ;   r20 <- (r20 + 0x01) % MAX_THREADS
-    ;   r21 <- 0x01 << r18
-    ; } while (r21 & r20)
+    ;   r20 <- !(x_disable_status | x_suspend_status | x_delay_status)
+1:  LDS r20, x_disable_status
+    LDS r21, x_suspend_status
+    OR r20, r21
+    LDS r21, x_delay_status
+    OR r20, r21
+    LDI r21, 0b11111111
+    EOR r20, r21
+    ;   r18 <- (r18 + 0x01) % NUM_THREADS
+    INC r18
     LDI r21, MAX_THREADS
     DEC r21
-1:  INC r18
     AND r18, r21
-    MOV r23, r18
-    LDI r22, 0x01
-    RJMP 2f
-3:  ADD r22, r22
-2:  DEC r23
-    BRPL 3b
-    MOV r23, r22
-    AND r23, r20
+
+    ;   r22 <- bit2mask8(r18)
+    MOV r24, r18
+    CALL bit2mask8
+    MOV r22, r24
+
+;     MOV r23, r18
+;     LDI r22, 0x01
+;     RJMP 2f
+; 3:  ADD r22, r22
+; 2:  DEC r23
+;     BRPL 3b
+
+    ; } while (r22 & r20)
+    AND r24, r20
     BREQ 1b
 
     ; x_thread_id <- r18
@@ -143,7 +153,7 @@ x_schedule:
     LDI r26, lo8(stack)
     LDI	r27, hi8(stack)
 
-    ; X <- X + (6 * r19:r)
+    ; X <- X + (6 * x_thread_id)
     ADD r26, r18
     ADC r27, r19
     ADD r26, r18
@@ -162,7 +172,7 @@ x_schedule:
     LD r21, X
 
     ; SP <- r21:r20
-    CLI
+    ; CLI
     OUT SPL, r20
     OUT SPH, r21
     SEI

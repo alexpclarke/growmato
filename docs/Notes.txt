@@ -1,3 +1,15 @@
+General Links:
+1.    avr-libc                            https://www.nongnu.org/avr-libc/user-manual/index.html
+2.    Gammon Forum - Microcontrollers     http://www.gammon.com.au/forum/index.php?bbtopic_id=123
+
+
+
+Reading about interupts:
+1.    Gammon Forum Interrupts             http://www.gammon.com.au/interrupts
+2.    avr-libc Interrupts                 https://www.nongnu.org/avr-libc/user-manual/group__avr__interrupts.html
+
+
+REGISTERS
 r0            return value low
 r1            return value high
 r2            callee-save
@@ -30,28 +42,3 @@ r28     YL    callee-save
 r29     YH    callee-save
 r30     ZL
 r31     ZH
-
-
-00000000
-      11111111
-
-0x8008fb  192   0xC0  11000000    *((uint8_t*)SP)
-0x8008fc  1     0x01  00000001    *((uint8_t*)SP + 1)
-0x8008fd  118   0x76  01110110    *((uint8_t*)SP + 2)
-0x8008fe  0     0x00  00000000    *((uint8_t*)SP + 3)
-0x8008ff  68    0x44  01000100    *((uint8_t*)SP + 4)
-
-0000000011111111222222223333333344444444
-8765432187654321876543218765432187654321
-1100000000000001100001000000000001000100
-              1100001000
-
-
-68    0x0044  00000000|01000100
-118   0x0076  00000000|01110110     *((uint16_t*)SP + 1)
-374   0x0176  00000001|01110110
-384   0x0180  00000001|10000000     x_init
-448   0x01C0  00000001|11000000     *((uint16_t*)SP)
-748   0x02ec  00000010|11101100     main
-
-

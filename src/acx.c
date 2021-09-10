@@ -1,3 +1,6 @@
+// Authors:   Alex Clarke
+// Date:      2021-09-09
+
 /* ----- Includes ----- */
 
 #include <avr/io.h>
@@ -13,13 +16,13 @@ byte x_thread_id;
 byte x_thread_mask;
 byte x_disable_status;
 byte x_suspend_status;
-byte x_delay_status;
+volatile byte x_delay_status;
 
 // Stack Control.
 STACK_CONTROL stack[MAX_THREADS];
 
 // Stack Memory.
-byte x_thread_stacks[STACK_MEM_SIZE];
+byte x_thread_stacks[MAX_THREADS * T_DEFAUNT_STACK_SIZE];
 
 // Thread Delay Counters.
 volatile uint16_t x_thread_delay[MAX_THREADS];
@@ -38,7 +41,7 @@ void x_init(void) {
   x_delay_status = 0b00000000;      // Set all threads to not delayed.
   x_system_counter = 0x00000000;    // Reset the system counter.
   x_thread_id = 0x00;               // Set thread 0 to be the current thread.
-  x_thread_mask = 0x01;             // Set the thred mask to 0.
+  x_thread_mask = 0b00000001;       // Set the thread mask to 0.
   for (int i = 0; i < MAX_THREADS; i++)
     x_thread_delay[i] = 0x0000;     // Set each thread's delay to 0.
 
@@ -62,22 +65,17 @@ void x_init(void) {
   // Initialize System Timer.
   init_System_Timer();
 
-
   // Move the system stack to the T0 stack.
-
-  for (int i = 3; i > 0; i--) {
-    // Get the value from the system stack annd put it into the T0 stack.
-    uint8_t val = *((uint8_t*)SP + i);
+  for (int i = 2; i > 0; i--) {
+    byte val = *((byte*)SP + i);
     *(stack[0].sp) = val;
-
-    // Update sp.
     stack[0].sp--;
   }
 
-  // Update hardware SP to the T0 stack.
+  // Update SP to the T0 stack.
   SP = (uint16_t)(stack[0].sp);
 
-  // Enable interrupts.
+  // Re-enable interrupts.
   sei();
 
   // Return to caller (now thread 0).
@@ -94,11 +92,8 @@ void x_new(uint8_t tid, PTHREAD pthread, bool isEnabled) {
   stack[tid].sp = stack[tid].spBase;
 
   // Copy the function pointer pthread onto tid's stack.
-  for (int i = 0; i < 3; i++) {
-    // Get the value from the pthread and put it into the tid stack.
+  for (int i = 0; i < 2; i++) {
     *(stack[tid].sp) = pt.addr[i];
-
-    // Update sp.
     stack[tid].sp--;
   }
 
@@ -228,4 +223,11 @@ void x_stack_overflow(int thread_id) {
     // PORTB ^= 0b00100000;
     // _delay_ms(100000);
   // }
+}
+
+// Converts a val 0-7 to a bit mask.
+uint8_t bit2mask8(uint8_t x) {
+  // Only accept values 0-8
+  if (x < 0 || x > 7) return 0b000000;
+  else return 0x01 << x;
 }
