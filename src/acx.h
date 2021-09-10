@@ -1,5 +1,5 @@
 // Authors:   Alex Clarke
-// Date:      2021-09-09
+// Date:      2021-09-10
 
 #ifndef ACX_H_
   #define ACX_H_
@@ -12,7 +12,7 @@
   /* ----- THREAD INFO ----- */
 
   // Maximum number of threads. Must be a power of two.
-  #define MAX_THREADS 4
+  #define MAX_THREADS 8
   // The default size of a thread stack.
   #define T_DEFAUNT_STACK_SIZE 256
 

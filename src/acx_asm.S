@@ -72,16 +72,17 @@ x_schedule:
 
     ; Loop through all threads to find the next ready one.
     ; do {
+    ;   r18 <- !(x_disable_status | x_delay_status)
     ;   r30 <- (r30 + 0x01) | 0b00000111
-1:  ; r18 <- !(x_disable_status | x_delay_status)
-    LDS r18, x_disable_status
+    ;   r19 <- 0b00000001 << r30
+    ; } while (r18 != r19)
+1:  LDS r18, x_disable_status
     LDS r19, x_delay_status
     OR r18, r19
     LDI r19, 0b11111111
     EOR r18, r19
     INC r30
-    ANDI r30, 0b00000011
-    ;   r19 <- 0b00000001 << r30
+    ANDI r30, 0b00000111
     LDI r19, 0b00000001
     MOV r20, r30
 2:  TST r20
@@ -92,15 +93,15 @@ x_schedule:
 3:  AND r19, r18
     BREQ 1b
 
-    CLI
-
     ; x_thread_id <- r30
     STS x_thread_id, r30
 
     ; SP = stack[x_thread_id].sp
     ; X <- stack
+    CLI
     LDI r26, lo8(stack)
     LDI	r27, hi8(stack)
+    SEI
 
     ; X <- X + (4 * x_thread_id)
     ADD r26, r30
@@ -117,9 +118,9 @@ x_schedule:
     LD r19, X
 
     ; SP <- r19:r18
+    CLI
     OUT SPL, r18
     OUT SPH, r19
-
     SEI
 
 ; --- Part 3: Restore context of next READY thread ---

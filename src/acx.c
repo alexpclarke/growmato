@@ -1,5 +1,5 @@
 // Authors:   Alex Clarke
-// Date:      2021-09-09
+// Date:      2021-09-10
 
 /* ----- Includes ----- */
 
@@ -75,6 +75,8 @@ void x_init(void) {
 // Creates a new thread by associating a function pointer with a specified
 // thread ID and stack.
 void x_new(uint8_t tid, PTHREAD pthread, bool isEnabled) {
+  if (tid >= MAX_THREADS) return;
+
   // Cast the pthread to a PTU for easier access.
   PTU pt = {.pthread = pthread};
 
