@@ -23,23 +23,17 @@
       #include <stdbool.h>
     #endif
 
-    // Make sure byte is defined.
-    #ifndef byte
-      typedef uint8_t byte;
-    #endif
-
     // Define the function/thread pointer.
     typedef void (*PTHREAD)(void);
     typedef union {
       PTHREAD pthread;
-      byte addr[2];
+      uint8_t addr[2];
     } PTU;
 
     // Structure for 
     typedef struct {
-      byte* sp;
-      byte* spBase;
-      byte* spCanary;
+      uint8_t* sp;
+      uint8_t* spBase;
     } STACK_CONTROL;
 
     // ACX function prototypes
@@ -48,15 +42,11 @@
     void x_yield(void);
     void x_schedule(void);
     void x_delay(uint16_t);
-    void x_suspend(uint8_t);
-    void x_resume(uint8_t);
     void x_disable(uint8_t);
     void x_enable(uint8_t);
     uint32_t x_gtime();
-    void x_stack_overflow(int);
 
     // Helper functions.
     void init_System_Timer(void);
-    uint8_t bit2mask8(uint8_t x);
   #endif
 #endif

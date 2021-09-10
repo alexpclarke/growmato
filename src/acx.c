@@ -12,17 +12,16 @@
 /* ----- Global Variables ----- */
 
 // Exec State Variables.
-byte x_thread_id;
-byte x_thread_mask;
-byte x_disable_status;
-byte x_suspend_status;
-volatile byte x_delay_status;
+uint8_t x_thread_id;
+volatile uint8_t x_disable_status;
+volatile uint8_t x_delay_status;
 
 // Stack Control.
 STACK_CONTROL stack[MAX_THREADS];
 
 // Stack Memory.
-byte x_thread_stacks[MAX_THREADS * T_DEFAUNT_STACK_SIZE];
+uint8_t x_thread_stacks_[MAX_THREADS * T_DEFAUNT_STACK_SIZE];
+uint8_t* x_thread_stacks = x_thread_stacks_;
 
 // Thread Delay Counters.
 volatile uint16_t x_thread_delay[MAX_THREADS];
@@ -37,11 +36,9 @@ void x_init(void) {
 
   // Initialize thread status variables.
   x_disable_status = 0b11111110;    // Set all but thread 0 to dissabled.
-  x_suspend_status = 0b00000000;    // Set all threads to not suspended.
   x_delay_status = 0b00000000;      // Set all threads to not delayed.
   x_system_counter = 0x00000000;    // Reset the system counter.
   x_thread_id = 0x00;               // Set thread 0 to be the current thread.
-  x_thread_mask = 0b00000001;       // Set the thread mask to 0.
   for (int i = 0; i < MAX_THREADS; i++)
     x_thread_delay[i] = 0x0000;     // Set each thread's delay to 0.
 
@@ -50,16 +47,9 @@ void x_init(void) {
     // Get the address of the previous base.
     uint8_t* prevBase = i == 0 ? x_thread_stacks - 1 : stack[i - 1].spBase;
 
-    // Set the base, sp and canary for each stack control block.
+    // Set the base and sp for each stack control block.
     stack[i].spBase = prevBase + T_DEFAUNT_STACK_SIZE;
     stack[i].sp = stack[i].spBase;
-    stack[i].spCanary = prevBase + 1;
-  }
-
-  // Put our canary values at each stack boundary (low end) to allow detection
-  // of stack overflow.
-  for (int i = 0; i < MAX_THREADS; i++) {
-    *(stack[i].spCanary) = STACK_CANARY;
   }
 
   // Initialize System Timer.
@@ -67,7 +57,7 @@ void x_init(void) {
 
   // Move the system stack to the T0 stack.
   for (int i = 2; i > 0; i--) {
-    byte val = *((byte*)SP + i);
+    uint8_t val = *((uint8_t*)SP + i);
     *(stack[0].sp) = val;
     stack[0].sp--;
   }
@@ -132,32 +122,14 @@ void x_delay(uint16_t ticks) {
   x_yield();
 }
 
-// Set specified thread's suspend status bit.
-void x_suspend(uint8_t tid) {
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    x_suspend_status |= (0x01 << tid);
-  }
-}
-
-// Clears specified thread's suspend status bit.
-void x_resume(uint8_t tid) {
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    x_suspend_status &= ~(0x01 << tid);
-  }
-}
-
 // Set specified thread's DISABLE status bit.
 void x_disable(uint8_t tid) {
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    x_disable_status |= (0x01 << tid);
-  }
+  x_disable_status |= (0x01 << tid);
 }
 
 // Clears specified thread's DISABLE status bit.
 void x_enable(uint8_t tid) {
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    x_disable_status &= ~(0x01 << tid);
-  }
+  x_disable_status &= ~(0x01 << tid);
 }
 
 // Returns current value of the system tick counter.
@@ -215,19 +187,8 @@ void init_System_Timer(void) {
   return;
 }
 
-// Entered when canary check indicates that a thread exceeded its stack
-// allocation. Does not return. Flashes the on-board LED with SOS pattern.
-void x_stack_overflow(int thread_id) {
-  // DDRB |= 0b00100000;
-  // while(1) {
-    // PORTB ^= 0b00100000;
-    // _delay_ms(100000);
-  // }
-}
-
 // Converts a val 0-7 to a bit mask.
 uint8_t bit2mask8(uint8_t x) {
   // Only accept values 0-8
-  if (x < 0 || x > 7) return 0b000000;
-  else return 0x01 << x;
+  return 0x01 << x;
 }

@@ -1,5 +1,5 @@
 ; Authors:  Alex Clarke
-; Date:     2021-09-09
+; Date:     2021-09-10
 
 #define __SFR_OFFSET 0
 #include <avr/io.h>
@@ -30,62 +30,26 @@ x_yield:
     PUSH r28
     PUSH r29
 
-    ; Store the value of our thread ID for later use.
+    ; Set the current thread's stack pointer to the system stack pointer.
+    ; stack[x_thread_id].sp <- SP
+
     ; r19:r18 <- x_thread_id
     LDS r18, x_thread_id
     LDI	r19, 0x00
 
-    ; Check if the canary has been changed.
-
-    ; r20 <- *(stack[x_thread_id].spCanary)
-    LDI r26, lo8(stack)
-    LDI	r27, hi8(stack)
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
-    ADIW r26, 0x04
-    LD r20, X+
-    LD r27, X
-    MOV r26, r20
-    LD r20, X
-
-    ; r21 <- STACK_CANARY
-    LDI r21, STACK_CANARY
-
-    ; If r20 != r21, the canary has been overwritten.
-    SUB r21, r20
-    BREQ 1f
-    MOV r24, r18
-    MOV r25, r19
-    CALL x_stack_overflow
-
-
-    ; Set the current thread's stack pointer to the system stack pointer.
-    ; stack[x_thread_id].sp <- SP
     ; r21:r20 <- SP
-1:  CLI
+    CLI
     IN r20, SPL
     IN r21, SPH
     SEI
 
-    ; X <- stack
+    ; X <- &stack[0]
+    CLI
     LDI r26, lo8(stack)
     LDI	r27, hi8(stack)
+    SEI
 
-    ; X <- X + (6 * r19:r18)
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
+    ; X <- X + (4 * r19:r18)
     ADD r26, r18
     ADC r27, r19
     ADD r26, r18
@@ -99,82 +63,63 @@ x_yield:
     ST X+, r20
     ST X, r21
 
-
     ; --- Part 2: Schedule the next thread ---
     .global	x_schedule
 x_schedule:
-    CLI
-
-    ; Store the value of our thread ID for later use.
-    ; r18 <- x_thread_id
-    LDS r18, x_thread_id
-    LDI r19, 0x00
+    ; Z <- x_thread_id
+    LDS r30, x_thread_id
+    LDI r31, 0x00
 
     ; Loop through all threads to find the next ready one.
     ; do {
-    ;   r20 <- !(x_disable_status | x_suspend_status | x_delay_status)
-1:  LDS r20, x_disable_status
-    LDS r21, x_suspend_status
-    OR r20, r21
-    LDS r21, x_delay_status
-    OR r20, r21
-    LDI r21, 0b11111111
-    EOR r20, r21
-    ;   r18 <- (r18 + 0x01) % NUM_THREADS
-    INC r18
-    LDI r21, MAX_THREADS
-    DEC r21
-    AND r18, r21
-
-    ;   r22 <- bit2mask8(r18)
-    MOV r24, r18
-    CALL bit2mask8
-    MOV r22, r24
-
-;     MOV r23, r18
-;     LDI r22, 0x01
-;     RJMP 2f
-; 3:  ADD r22, r22
-; 2:  DEC r23
-;     BRPL 3b
-
-    ; } while (r22 & r20)
-    AND r24, r20
+    ;   r30 <- (r30 + 0x01) | 0b00000111
+1:  ; r18 <- !(x_disable_status | x_delay_status)
+    LDS r18, x_disable_status
+    LDS r19, x_delay_status
+    OR r18, r19
+    LDI r19, 0b11111111
+    EOR r18, r19
+    INC r30
+    ANDI r30, 0b00000011
+    ;   r19 <- 0b00000001 << r30
+    LDI r19, 0b00000001
+    MOV r20, r30
+2:  TST r20
+    BREQ 3f
+    ADD r19, r19
+    DEC r20
+    JMP 2b
+3:  AND r19, r18
     BREQ 1b
 
-    ; x_thread_id <- r18
-    STS x_thread_id, r18
+    CLI
 
-    ; x_thread_mask <- r22
-    STS x_thread_mask, r22
+    ; x_thread_id <- r30
+    STS x_thread_id, r30
 
     ; SP = stack[x_thread_id].sp
     ; X <- stack
     LDI r26, lo8(stack)
     LDI	r27, hi8(stack)
 
-    ; X <- X + (6 * x_thread_id)
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
+    ; X <- X + (4 * x_thread_id)
+    ADD r26, r30
+    ADC r27, r31
+    ADD r26, r30
+    ADC r27, r31
+    ADD r26, r30
+    ADC r27, r31
+    ADD r26, r30
+    ADC r27, r31
 
-    ; r21:r20 <- stack[x_thread_id].sp
-    LD r20, X+
-    LD r21, X
+    ; r19:r18 <- stack[x_thread_id].sp
+    LD r18, X+
+    LD r19, X
 
-    ; SP <- r21:r20
-    ; CLI
-    OUT SPL, r20
-    OUT SPH, r21
+    ; SP <- r19:r18
+    OUT SPL, r18
+    OUT SPH, r19
+
     SEI
 
 ; --- Part 3: Restore context of next READY thread ---

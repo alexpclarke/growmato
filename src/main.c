@@ -8,22 +8,15 @@
 /* ----- Main Functions ----- */
 
 void flash() {
-  // DDRB |= 0b01000000;
+  DDRB |= 0b00100000;
   while (1) {
-    // PORTB ^= 0b01000000;
-    x_delay(100);
+    PORTB ^= 0b00100000;
+    x_delay(500);
     // x_yield();
   }
 }
 
 int main(void) {
   x_init();
-
-  x_new(1, flash, false);
-  
-  DDRB |= 0b00100000;
-  while (1) {
-    PORTB ^= 0b00100000;
-    x_delay(1000);
-  }
+  x_new(0, flash, true);
 }
