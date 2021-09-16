@@ -7,12 +7,12 @@
   /* ----- SYSTEM INFO ----- */
 
   #define CLOCK_HZ 16000000
-  #define	STACK_CANARY 0xAA
 
   /* ----- THREAD INFO ----- */
 
   // Maximum number of threads. Must be a power of two.
   #define MAX_THREADS 8
+
   // The default size of a thread stack.
   #define T_DEFAUNT_STACK_SIZE 256
 
@@ -38,15 +38,12 @@
 
     // ACX function prototypes
     void x_init(void);
+    void x_init_system_timer(void);
     void x_new(uint8_t, PTHREAD, bool);
     void x_yield(void);
     void x_schedule(void);
     void x_delay(uint16_t);
     void x_disable(uint8_t);
     void x_enable(uint8_t);
-    uint32_t x_gtime();
-
-    // Helper functions.
-    void init_System_Timer(void);
   #endif
 #endif

@@ -13,19 +13,17 @@
 
 // Exec State Variables.
 uint8_t x_thread_id;
-volatile uint8_t x_disable_status;
+uint8_t x_disable_status;
 volatile uint8_t x_delay_status;
 
 // Stack Control.
 STACK_CONTROL stack[MAX_THREADS];
 
 // Stack Memory.
-uint8_t x_thread_stacks_[MAX_THREADS * T_DEFAUNT_STACK_SIZE];
-uint8_t* x_thread_stacks = x_thread_stacks_;
+uint8_t x_thread_stacks[MAX_THREADS * T_DEFAUNT_STACK_SIZE];
 
 // Thread Delay Counters.
 volatile uint16_t x_thread_delay[MAX_THREADS];
-volatile uint32_t x_system_counter;
 
 /* ----- ACX Functions ----- */
 
@@ -38,7 +36,6 @@ void x_init(void) {
   x_disable_status = 0b11111110;    // Set all but thread 0 to dissabled.
   x_delay_status = 0b00000000;      // Set all threads to not delayed.
   x_thread_id = 0x00;               // Set thread 0 to be the current thread.
-  x_system_counter = 0x00000000;    // Reset the system counter.
   for (int i = 0; i < MAX_THREADS; i++)
     x_thread_delay[i] = 0x0000;     // Reset each thread's delay counter.
 
@@ -53,7 +50,7 @@ void x_init(void) {
   }
 
   // Initialize System Timer.
-  init_System_Timer();
+  x_init_system_timer();
 
   // Move the system stack to the T0 stack.
   for (int i = 2; i > 0; i--) {
@@ -127,29 +124,19 @@ void x_delay(uint16_t ticks) {
 // Set specified thread's DISABLE status bit.
 void x_disable(uint8_t tid) {
   x_disable_status |= (0x01 << tid);
+  return;
 }
 
 // Clears specified thread's DISABLE status bit.
 void x_enable(uint8_t tid) {
   x_disable_status &= ~(0x01 << tid);
-}
-
-// Returns current value of the system tick counter.
-uint32_t x_gtime(){
-  uint32_t x_system_counter_;
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-    x_system_counter_ = x_system_counter;
-  }
-  return x_system_counter_;
+  return;
 }
 
 /* -----  Inerupt Service Routines ----- */
 
 // This interrupt is triggered every 1 msec based on TIMER0 COMPARE MATCH.
 ISR(TIMER0_COMPA_vect) {
-  // Increment the system clock.
-  x_system_counter++;
-
   // For each delayed thread, decrement its counter and if the counter is at
   // 0, turn the delay status off.
   for (int i = 0; i < MAX_THREADS; i++) {
@@ -160,13 +147,16 @@ ISR(TIMER0_COMPA_vect) {
       }
     }
   }
+
+  // Done with ISR, continue whatever the system was doing before the interupt.
+  return;
 }
 
 /* ----- Helper Functions ----- */
 
 // Set up the system counter on Timer0 in CTC mode that produces an interupt at
 // a 1mHz resolution.
-void init_System_Timer(void) {
+void x_init_system_timer(void) {
   // Clear registers.
   TCCR0A = 0x00;
   TCCR0B = 0x00;
@@ -185,6 +175,6 @@ void init_System_Timer(void) {
   // Set prescalar to 64.
   TCCR0B |= (0b011 << CS00);
 
-  // Successfully set the system timer.
+  // Finished setting up the system timer.
   return;
 }
