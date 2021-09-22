@@ -42,7 +42,7 @@
   /* ----- Prototypes ----- */
   bool x_serial_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t stop_bits, bool u2x);
   int x_serial_getc();
-  int x_serial_putc(char c);
+  int x_serial_putc(uint8_t c);
   int x_serial_gets(int maxlen, char* buffer);
   int x_serial_puts(char* buffer);
   uint16_t x_calc_baud(uint32_t speed, bool u2x);

@@ -6,8 +6,8 @@
 /* ----- DATA ----- */
 
 // Initialize serial port transmit and receive buffers.
-uint8_t rx_buffer[BUFFER_SIZE];
-uint8_t tx_buffer[BUFFER_SIZE];
+volatile uint8_t rx_buffer[BUFFER_SIZE];
+volatile uint8_t tx_buffer[BUFFER_SIZE];
 
 // Initialize transmit and receive queue control blocks.
 volatile QCB rx_queue;
@@ -20,22 +20,21 @@ volatile QCB tx_queue;
 // }
 
 ISR (USART_UDRE_vect) {
+  // UDR0 = tx_queue.buffer[tx_queue.out];
+
   uint8_t val;
-  ATOMIC_BLOCK (ATOMIC_RESTORESTATE) {
-    if (Q_getc(tx_queue, &val)) {
-      UDR0 = val;
-    } else {
-      UCSR0B &= !(1 << UDRIE0);
-    }
+  if (Q_getc(&tx_queue, &val)) {
+    UDR0 = val;
+  } else {
+    UCSR0B &= 0b11011111;
   }
 }
 
-
-// /* ----- SERIAL PORT FUNCTIONS ----- */
+/* ----- SERIAL PORT FUNCTIONS ----- */
 
 bool x_serial_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t stop_bits, bool u2x) {
-  Q_init(rx_queue, rx_buffer);
-  Q_init(tx_queue, tx_buffer);
+  Q_init(&rx_queue, rx_buffer);
+  Q_init(&tx_queue, tx_buffer);
 
   // Set baud rate.
   uint16_t bitTime = x_calc_baud(speed, u2x);
@@ -43,7 +42,8 @@ bool x_serial_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t st
   UBRR0L = (uint8_t)bitTime;
 
   // Enable receiver and transmitter.
-  UCSR0B = (1<<RXEN0)|(1<<TXEN0);
+  // UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+  UCSR0B |= (1 << TXEN0);
 
   // Set the framing.
   uint8_t framing = 0b00000000;
@@ -58,9 +58,9 @@ bool x_serial_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t st
   else if (stop_bits != 1) return false;
 
   // Set data bits.
-  if (data_bits == 6) framing |= 0b00000001;
-  else if (data_bits == 7) framing |= 0b00000010;
-  else if (data_bits == 8) framing |= 0b00000011;
+  if (data_bits == 6) framing |= 0b00000010;
+  else if (data_bits == 7) framing |= 0b00000100;
+  else if (data_bits == 8) framing |= 0b00000110;
   else if (data_bits != 5) return false;
 
   UCSR0C = framing;
@@ -73,14 +73,15 @@ bool x_serial_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t st
 
 // Sends a character over the designated port. Returns the number of characters
 // put.
-int x_serial_putc(char data) {
-  // Block until we are able to push our data to the tx queue.
-  while(!Q_putc(tx_queue, data)) {
+int x_serial_putc(uint8_t data) {
+  // Yield until we are able to push our data to the tx queue.
+  while(!Q_putc(&tx_queue, data)) {
     x_yield();
   };
 
   // Enable the data regester empty interupt.
-  UCSR0B |= (1 << UDRIE0);
+  // UCSR0B |= (1 << UDRIE0);
+  UCSR0B |= 0b00100000;
 
   // Return the number of characters successfully put.
   return 1;

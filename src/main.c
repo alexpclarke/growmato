@@ -3,7 +3,7 @@
 
 /* ----- Includes ----- */
 #include "acx.h"
-// #include "acx-serial.h"
+#include "acx-serial.h"
 
 /* ----- Main Functions ----- */
 
@@ -17,11 +17,15 @@ void flash() {
 
 
 void USART() {
-  // x_serial_init(115200, 8, P_NONE, 1, false);
+  x_serial_init(115200, 8, P_NONE, 1, false);
 
   while (1) {
-    // x_serial_putc('x');
-    x_delay(2000);
+    x_serial_putc('x');
+    x_delay(1000);
+    x_serial_putc('y');
+    x_delay(1000);
+    x_serial_putc('z');
+    x_delay(1000);
   }
 }
 
@@ -30,5 +34,5 @@ int main(void) {
   x_init();
 
   x_new(1, flash, true);
-  // x_new(0, USART, true);
+  x_new(0, USART, true);
 }
