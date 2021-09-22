@@ -18,6 +18,11 @@
 
   // Only include if being imported by a non-assembly file.
   #ifndef __ASSEMBLER__
+    #include <avr/io.h>
+    #include <avr/interrupt.h>
+    #include <util/atomic.h>
+    #include <stdlib.h>
+  
     // Make sure bool is defined.
     #ifndef bool
       #include <stdbool.h>

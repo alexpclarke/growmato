@@ -3,10 +3,6 @@
 
 /* ----- Includes ----- */
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <util/atomic.h>
-#include <stdlib.h>
 #include "acx.h"
 
 /* ----- Global Variables ----- */
