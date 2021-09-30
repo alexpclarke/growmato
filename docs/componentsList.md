@@ -1,11 +1,13 @@
 # Soil Moisture Sensor:
 
 ## Specifications:
-Power Options: Off/On
-Data type: 
+### Power Options: 
+    Off/On
+### Data type: 
     int mositureLevel
     bool power
-Address: 0x36 (STEMMA)
+### Address: 
+    0x36 (STEMMA)
 
 
 ## Adafruit STEMMA (I2C):
@@ -19,12 +21,14 @@ Address: 0x36 (STEMMA)
 # Humidity Sensor:
 
 ## Specifications: 
-Power Options: Off/On
-Data type:
+### Power Options: 
+    Off/On
+### Data type:
     int humidityLevel
     int temperature
     bool power
-address: Can be selected (SHT30)
+### address: 
+    Can be selected (SHT30)
 
 ## Adafruit SHT30 Temperature and Humidity Sensor (I2C)
     https://www.adafruit.com/product/5064
