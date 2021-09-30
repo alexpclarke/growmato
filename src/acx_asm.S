@@ -34,7 +34,7 @@ x_yield:
     ; stack[x_thread_id].sp <- SP
 
     ; r19:r18 <- x_thread_id
-    LDS r18, x_thread_id
+    LDS r18, T_ID
     LDI	r19, 0x00
 
     ; r21:r20 <- SP
@@ -67,7 +67,7 @@ x_yield:
     .global	x_schedule
 x_schedule:
     ; Z <- x_thread_id
-    LDS r30, x_thread_id
+    LDS r30, T_ID
     LDI r31, 0x00
 
     ; Loop through all threads to find the next ready one.
@@ -76,8 +76,8 @@ x_schedule:
     ;   r30 <- (r30 + 0x01) | 0b00000111
     ;   r19 <- 0b00000001 << r30
     ; } while (r18 != r19)
-1:  LDS r18, x_disable_status
-    LDS r19, x_delay_status
+1:  LDS r18, T_DISABLED_STATUS
+    LDS r19, T_DELAYED_STATUS
     OR r18, r19
     LDI r19, 0b11111111
     EOR r18, r19
@@ -94,7 +94,7 @@ x_schedule:
     BREQ 1b
 
     ; x_thread_id <- r30
-    STS x_thread_id, r30
+    STS T_ID, r30
 
     ; SP = stack[x_thread_id].sp
     ; X <- stack

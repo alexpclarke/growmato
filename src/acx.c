@@ -7,41 +7,37 @@
 
 /* ----- Global Variables ----- */
 
-// Exec State Variables.
-uint8_t x_thread_id;
-uint8_t x_disable_status;
-volatile uint8_t x_delay_status;
-
 // Stack Control.
-STACK_CONTROL stack[MAX_THREADS];
-
+STACK_CONTROL stack[NUM_THREADS];
 // Stack Memory.
-uint8_t x_thread_stacks[MAX_THREADS * T_DEFAUNT_STACK_SIZE];
-
+volatile uint8_t* x_thread_stacks;
 // Thread Delay Counters.
-volatile uint16_t x_thread_delay[MAX_THREADS];
+volatile uint16_t* x_thread_delay;
 
 /* ----- ACX Functions ----- */
 
 // Initializes the ACX kernel.
 void x_init(void) {
+  x_thread_stacks = &T_STACK_BUFF;
+  x_thread_delay = &T_DELAY_BUFF;
+
   // Clear interupts so the init doesnt get interupted.
   cli();
 
   // Initialize thread status variables.
-  x_disable_status = 0b11111110;    // Set all but thread 0 to dissabled.
-  x_delay_status = 0b00000000;      // Set all threads to not delayed.
-  x_thread_id = 0x00;               // Set thread 0 to be the current thread.
-  for (int i = 0; i < MAX_THREADS; i++)
+  T_DISABLED_STATUS = 0b11111110;   // Set all but thread 0 to dissabled.
+  T_DELAYED_STATUS = 0b00000000;    // Set all threads to not delayed.
+  T_ID = 0x00;                      // Set thread 0 to be the current thread.
+  for (int i = 0; i < NUM_THREADS; i++)
     x_thread_delay[i] = 0x0000;     // Reset each thread's delay counter.
 
   // Initialize Stack Control.
-  for (int i = 0; i < MAX_THREADS; i++) {
+  for (int i = 0; i < NUM_THREADS; i++) {
     // Get the address of the previous base.
     uint8_t* prevBase = i == 0 ? x_thread_stacks - 1 : stack[i - 1].spBase;
 
     // Set the base and sp for each stack control block.
-    stack[i].spBase = prevBase + T_DEFAUNT_STACK_SIZE;
+    stack[i].spBase = prevBase + T_STACK_SIZE;
     stack[i].sp = stack[i].spBase;
   }
 
@@ -68,7 +64,7 @@ void x_init(void) {
 // Creates a new thread by associating a function pointer with a specified
 // thread ID and stack.
 void x_new(uint8_t tid, PTHREAD pthread, bool isEnabled) {
-  if (tid >= MAX_THREADS) return;
+  if (tid >= NUM_THREADS) return;
 
   // Cast the pthread to a PTU for easier access.
   PTU pt = {.pthread = pthread};
@@ -87,13 +83,13 @@ void x_new(uint8_t tid, PTHREAD pthread, bool isEnabled) {
 
   // Set or clear the enabled bit for the thread.
   if (isEnabled) {
-    x_disable_status &= ~(0x01 << tid);
+    T_DISABLED_STATUS &= ~(0x01 << tid);
   } else {
-    x_disable_status |= 0x01 << tid;
+    T_DISABLED_STATUS |= 0x01 << tid;
   }
 
   // If the current thread was overwritten, go to the scheduler.
-  if (tid == x_thread_id) {
+  if (tid == T_ID) {
     x_schedule();
   } else {
     return;
@@ -106,10 +102,10 @@ void x_delay(uint16_t ticks) {
   if (ticks > 0) {
     ATOMIC_BLOCK (ATOMIC_RESTORESTATE) {
       // Copy the delay value into the calling thread's delay counter.
-      x_thread_delay[x_thread_id] = ticks;
+      x_thread_delay[T_ID] = ticks;
 
       // Set the x_delay_status bit corresponding to the calling thread's ID.
-      x_delay_status |= (0x01 << x_thread_id);
+      T_DELAYED_STATUS |= (0x01 << T_ID);
     }
   }
 
@@ -119,13 +115,13 @@ void x_delay(uint16_t ticks) {
 
 // Set specified thread's DISABLE status bit.
 void x_disable(uint8_t tid) {
-  x_disable_status |= (0x01 << tid);
+  T_DISABLED_STATUS |= (0x01 << tid);
   return;
 }
 
 // Clears specified thread's DISABLE status bit.
 void x_enable(uint8_t tid) {
-  x_disable_status &= ~(0x01 << tid);
+  T_DISABLED_STATUS &= ~(0x01 << tid);
   return;
 }
 
@@ -135,11 +131,11 @@ void x_enable(uint8_t tid) {
 ISR(TIMER0_COMPA_vect) {
   // For each delayed thread, decrement its counter and if the counter is at
   // 0, turn the delay status off.
-  for (int i = 0; i < MAX_THREADS; i++) {
-    if (x_delay_status & (0x01 << i)) {
+  for (int i = 0; i < NUM_THREADS; i++) {
+    if (T_DELAYED_STATUS & (0x01 << i)) {
       x_thread_delay[i]--;
       if (x_thread_delay[i] == 0) {
-        x_delay_status &= ~(0x01 << i);
+        T_DELAYED_STATUS &= ~(0x01 << i);
       }
     }
   }
