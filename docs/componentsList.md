@@ -1,4 +1,13 @@
 # Soil Moisture Sensor:
+
+## Specifications:
+Power Options: Off/On
+Data type: 
+    int mositureLevel
+    bool power
+Address: 0x36 (STEMMA)
+
+
 ## Adafruit STEMMA (I2C):
     https://learn.adafruit.com/introducing-adafruit-stemma-qt/technical-specs
 
@@ -8,6 +17,18 @@
     https://www.sparkfun.com/qwiic
 
 # Humidity Sensor:
+
+## Specifications: 
+Power Options: Off/On
+Data type:
+    int humidityLevel
+    int temperature
+    bool power
+address: Can be selected (SHT30)
+
+## Adafruit SHT30 Temperature and Humidity Sensor (I2C)
+    https://www.adafruit.com/product/5064
+    https://www.mouser.com/datasheet/2/682/Sensirion_Humidity_Sensors_SHT3x_Datasheet_digital-971521.pdf
 
 ## Adafruit encased temp & humidity (I2C):
     https://www.adafruit.com/product/1293
@@ -22,6 +43,9 @@
     https://learn.adafruit.com/dht?view=all
 
 # Parts for watering solution:
+
+## Specifications:
+
 
 ## Video for watering solution: 
     https://www.youtube.com/watch?v=ioSYlxHlYdI
