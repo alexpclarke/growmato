@@ -1,10 +1,6 @@
-// Authors:   Alex Clarke
-// Date:      2021-09-10
-
 #ifndef ACX_H_
   #define ACX_H_
 
-  // Include SRF_DEF's.
   #include "acx-srf_defs.h"
 
   /* ----- SYSTEM INFO ----- */

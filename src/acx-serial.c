@@ -1,6 +1,3 @@
-// Author:  Alex Clarke
-// Date:    2021-09-16
-
 #include "acx-serial.h"
 
 /* ----- DATA ----- */
@@ -13,11 +10,11 @@ uint8_t tx_buffer[BUFFER_SIZE];
 QCB rx_queue;
 QCB tx_queue;
 
-// /* ----- Inerupt Service Routines ----- */
+/* ----- Inerupt Service Routines ----- */
 
-// ISR (USART_RX_vect) {
-//   Q_putc(rx_queue, UDR0);
-// }
+ISR (USART_RX_vect) {
+  Q_putc(&rx_queue, UDR0);
+}
 
 ISR (USART_UDRE_vect) {
   uint8_t val;
@@ -67,25 +64,28 @@ bool x_serial_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t st
 
 // Sends a character over the USART port and returns the number of characters
 // transmitted.
-int x_serial_putc(uint8_t data) {
+bool x_serial_putc(uint8_t data) {
   // Yield until we are able to push our data to the tx queue.
   while(!Q_putc(&tx_queue, data)) {
     x_yield();
-  };  
+  };
 
   // Enable the data regester empty interupt.
   UCSR0B |= (1 << UDRIE0);
 
   // Return the number of characters successfully put.
-  return 1;
+  return true;
 }
 
-int x_serial_puts(char* pdata) {
-  char* ptr = pdata;
+int x_serial_puts(uint8_t* pdata) {
+  int count = 0;
+
+  uint8_t* ptr = pdata;
   while (*ptr != '\0') {
     while(!Q_putc(&tx_queue, *ptr)) {
       x_yield();
     };
+    count++;
     ptr++;
   }
 
@@ -93,39 +93,34 @@ int x_serial_puts(char* pdata) {
   UCSR0B |= (1 << UDRIE0);
 
   // Return the number of characters successfully put.
-  return 1;
+  return count;
 }
 
 // Gets a character from port n. Returns either a character if one is found or
 // -1 if none is found.
-// int x_serial_getc() {
-//   // Get a character from the queue, if none is found return -1.
-//   uint8_t val;
-//   if (Q_getc(&rx_queue, &val)) {
-//     return (int)val;
-//   } else {
-//     return -1;
-//   }
-// }
+bool x_serial_getc(uint8_t* dest) {
+  // Get a character from the queue, if none is found return -1.
+  return Q_getc(&rx_queue, dest);
+}
 
-// int x_serial_gets(int maxlen, char* pdata){
-//   // Validate pdata.
-//   if (pdata == NULL) return 0;
+int x_serial_gets(uint8_t maxlen, uint8_t* pdata){
+  // Validate pdata.
+  if (pdata == ((void*)0)) return 0;
 
-//   // Get all the characters untill we hit a new line, a null or getc fails.
-//   int i;
-//   for (i = 0; i < maxlen - 1; i++) {
-//     int val = x_serial_getc(0);
-//     if (val == '\n' || val == '\0' || val == -1) break;
-//     pdata[i] = val;
-//   }
+  // Get all the characters untill we hit a new line, a null or getc fails.
+  int i;
+  for (i = 0; i < maxlen - 1; i++) {
+    int val = x_serial_getc(0);
+    if (val == '\n' || val == '\0' || val == -1) break;
+    pdata[i] = val;
+  }
 
-//   // Set null terminating bit.
-//   pdata[i + 1] = '\0';
+  // Set null terminating bit.
+  pdata[i + 1] = '\0';
 
-//   // Return the number of characters retrieved.
-//   return i;
-// }
+  // Return the number of characters retrieved.
+  return i;
+}
 
 
 /* ----- Helper Functions ----- */
