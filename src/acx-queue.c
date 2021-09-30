@@ -11,13 +11,8 @@ bool Q_init(QCB* qcb, uint8_t* buffer_) {
 
 // Gets a char from specified queue.
 bool Q_getc(QCB* qcb, uint8_t* valPtr) {
-
-  
-
   // Check that there are available characters to get. If there are none, fail.
   if (qcb->available == 0) return false;
-  
-  
 
   // Enter atomic block while we change things.
   ATOMIC_BLOCK (ATOMIC_RESTORESTATE) {

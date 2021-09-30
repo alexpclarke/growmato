@@ -14,7 +14,7 @@
   #define MAX_THREADS 8
 
   // The default size of a thread stack.
-  #define T_DEFAUNT_STACK_SIZE 256
+  #define T_DEFAUNT_STACK_SIZE 128
 
   // Only include if being imported by a non-assembly file.
   #ifndef __ASSEMBLER__

@@ -1,0 +1,71 @@
+Flash  32k bytes (of which .5k is used for the bootloader)
+SRAM   2k bytes
+EEPROM 1k byte
+
+----- Flash -----
+
+| Start  | End    | Description |
+| ------ | ------ | ----------- |
+| 0x0000 | 0x07FF | ???         |
+
+
+
+----- SRAM -----
+
+| Start  | End    | Description     |
+| ------ | ------ | --------------- |
+| 0x0000 | 0x007F | Thread 0 Stack  |
+| 0x0080 | 0x00FF | Thread 1 Stack  |
+| 0x0100 | 0x017F | Thread 2 Stack  |
+| 0x0180 | 0x01FF | Thread 3 Stack  |
+| 0x0200 | 0x02F7 | Thread 4 Stack  |
+| 0x0280 | 0x02FF | Thread 5 Stack  |
+| 0x0300 | 0x03F7 | Thread 6 Stack  |
+| 0x0380 | 0x03FF | Thread 7 Stack  |
+| 0x0400 | 0x043F | USART RX Buffer |
+| 0x0440 | 0x047F | USART TX Buffer |
+| 0x0480 | 0x07FF | Unused          |
+
+
+
+----- EEPROM -----
+
+| Start  | End    | Description |
+| ------ | ------ | ----------- |
+| 0x0000 | 0x03FF | Unused      |
+
+
+
+----- REGISTERS -----
+r0            return value low
+r1            return value high
+r2            callee-save
+r3            callee-save
+r4            callee-save
+r5            callee-save
+r6            callee-save
+r7            callee-save
+r8            callee-save
+r9            callee-save
+r10           callee-save
+r11           callee-save
+r12           callee-save
+r13           callee-save
+r14           callee-save
+r15           callee-save
+r16           callee-save
+r17           callee-save
+r18           used
+r19           used
+r20           used
+r21           used
+r22     R0
+r23    
+r24     P0
+r25     P1
+r26     XL    
+r27     XH    RESERVED FOR KERNEL
+r28     YL    callee-save
+r29     YH    callee-save
+r30     ZL
+r31     ZH
