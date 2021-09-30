@@ -7,32 +7,12 @@
 #include <util/atomic.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "acx-srf_defs.h"
 #include "acx.h"
 #include "acx-queue.h"
 
 #ifndef ACX_SERIAL_H_
   #define ACX_SERIAL_H_
-
-  // Make sure NULL is defined for pointers.
-  // #ifndef NULL
-  //   #define NULL ((void*)0)
-  // #endif
-
-  /* ----- Serial Port Registers type ----- */
-  typedef struct {
-    volatile uint8_t  UCSRnA;
-    volatile uint8_t  UCSRnB;
-    volatile uint8_t  UCSRnC;
-    volatile uint8_t  rsvd;
-    volatile uint16_t UBRRn;
-    volatile uint8_t  UDRn;
-  } SERIAL_PORT_REGS;
-
-  typedef struct {
-    QCB* rxq;
-    QCB* txq;
-    SERIAL_PORT_REGS* regs;
-  } SERIAL_PORT;
 
   /* ----- Framing Settings ----- */
   #define P_NONE 0
