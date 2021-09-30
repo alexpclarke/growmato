@@ -1,17 +1,12 @@
 // Authors:   Alex Clarke
 // Date:      2021-09-10
 
-/* ----- Includes ----- */
-
 #include "acx.h"
 
 /* ----- Global Variables ----- */
 
-// Stack Control.
-STACK_CONTROL stack[NUM_THREADS];
-// Stack Memory.
+STACK_CONTROL x_stack_control[NUM_THREADS];
 volatile uint8_t* x_thread_stacks;
-// Thread Delay Counters.
 volatile uint16_t* x_thread_delay;
 
 /* ----- ACX Functions ----- */
@@ -34,11 +29,11 @@ void x_init(void) {
   // Initialize Stack Control.
   for (int i = 0; i < NUM_THREADS; i++) {
     // Get the address of the previous base.
-    uint8_t* prevBase = i == 0 ? x_thread_stacks - 1 : stack[i - 1].spBase;
+    uint8_t* prevBase = i == 0 ? x_thread_stacks - 1 : x_stack_control[i - 1].spBase;
 
     // Set the base and sp for each stack control block.
-    stack[i].spBase = prevBase + T_STACK_SIZE;
-    stack[i].sp = stack[i].spBase;
+    x_stack_control[i].spBase = prevBase + T_STACK_SIZE;
+    x_stack_control[i].sp = x_stack_control[i].spBase;
   }
 
   // Initialize System Timer.
@@ -47,12 +42,12 @@ void x_init(void) {
   // Move the system stack to the T0 stack.
   for (int i = 2; i > 0; i--) {
     uint8_t val = *((uint8_t*)SP + i);
-    *(stack[0].sp) = val;
-    stack[0].sp--;
+    *(x_stack_control[0].sp) = val;
+    x_stack_control[0].sp--;
   }
 
   // Update SP to the T0 stack.
-  SP = (uint16_t)(stack[0].sp);
+  SP = (uint16_t)(x_stack_control[0].sp);
 
   // Re-enable interrupts.
   sei();
@@ -70,16 +65,16 @@ void x_new(uint8_t tid, PTHREAD pthread, bool isEnabled) {
   PTU pt = {.pthread = pthread};
 
   // Reset the sp of the current stack back to its spBase, clearing its stack.
-  stack[tid].sp = stack[tid].spBase;
+  x_stack_control[tid].sp = x_stack_control[tid].spBase;
 
   // Copy the function pointer pthread onto tid's stack.
   for (int i = 0; i < 2; i++) {
-    *(stack[tid].sp) = pt.addr[i];
-    stack[tid].sp--;
+    *(x_stack_control[tid].sp) = pt.addr[i];
+    x_stack_control[tid].sp--;
   }
 
   // Leave room for the 18 callee-saved registers on the tid stack.
-  stack[tid].sp -= 18;
+  x_stack_control[tid].sp -= 18;
 
   // Set or clear the enabled bit for the thread.
   if (isEnabled) {

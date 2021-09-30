@@ -2,6 +2,7 @@
 #include <util/atomic.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "acx-srf_defs.h"
 
 #ifndef ACX_QUEUE_H_
   #define ACX_QUEUE_H_

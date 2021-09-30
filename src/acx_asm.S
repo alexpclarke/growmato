@@ -31,9 +31,9 @@ x_yield:
     PUSH r29
 
     ; Set the current thread's stack pointer to the system stack pointer.
-    ; stack[x_thread_id].sp <- SP
+    ; x_stack_control[T_ID].sp <- SP
 
-    ; r19:r18 <- x_thread_id
+    ; r19:r18 <- T_ID
     LDS r18, T_ID
     LDI	r19, 0x00
 
@@ -43,10 +43,10 @@ x_yield:
     IN r21, SPH
     SEI
 
-    ; X <- &stack[0]
+    ; X <- &x_stack_control[0]
     CLI
-    LDI r26, lo8(stack)
-    LDI	r27, hi8(stack)
+    LDI r26, lo8(x_stack_control)
+    LDI	r27, hi8(x_stack_control)
     SEI
 
     ; X <- X + (4 * r19:r18)
@@ -66,13 +66,13 @@ x_yield:
     ; --- Part 2: Schedule the next thread ---
     .global	x_schedule
 x_schedule:
-    ; Z <- x_thread_id
+    ; Z <- T_ID
     LDS r30, T_ID
     LDI r31, 0x00
 
     ; Loop through all threads to find the next ready one.
     ; do {
-    ;   r18 <- !(x_disable_status | x_delay_status)
+    ;   r18 <- !(T_DISABLED_STATUS | T_DELAYED_STATUS)
     ;   r30 <- (r30 + 0x01) | 0b00000111
     ;   r19 <- 0b00000001 << r30
     ; } while (r18 != r19)
@@ -93,17 +93,17 @@ x_schedule:
 3:  AND r19, r18
     BREQ 1b
 
-    ; x_thread_id <- r30
+    ; T_ID <- r30
     STS T_ID, r30
 
-    ; SP = stack[x_thread_id].sp
-    ; X <- stack
+    ; SP = x_stack_control[T_ID].sp
+    ; X <- x_stack_control
     CLI
-    LDI r26, lo8(stack)
-    LDI	r27, hi8(stack)
+    LDI r26, lo8(x_stack_control)
+    LDI	r27, hi8(x_stack_control)
     SEI
 
-    ; X <- X + (4 * x_thread_id)
+    ; X <- X + (4 * T_ID)
     ADD r26, r30
     ADC r27, r31
     ADD r26, r30
@@ -113,7 +113,7 @@ x_schedule:
     ADD r26, r30
     ADC r27, r31
 
-    ; r19:r18 <- stack[x_thread_id].sp
+    ; r19:r18 <- x_stack_control[T_ID].sp
     LD r18, X+
     LD r19, X
 
