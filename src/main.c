@@ -5,6 +5,14 @@
 
 /* ----- Main Functions ----- */
 
+void flash() {
+  DDRB |= 0b00100000;
+  while (1) {
+    PORTB ^= 0b00100000;
+    x_delay(2000);
+  }
+}
+
 void flash0() {
   DDRB |= 0b00000001;
   while (1) {
@@ -31,7 +39,7 @@ void flash2() {
 }
 
 void USART() {
-  
+  x_serial_init(115200, 8, P_NONE, 1, false);
 
   while (1) {
     x_serial_puts("test\n");
@@ -40,26 +48,29 @@ void USART() {
 }
 
 void USART2() {
-  x_serial_init(115200, 8, P_NONE, 1, false);
+  // x_serial_init(115200, 8, P_NONE, 1, false);
   // int maxlen = 20;
   // char* buff = calloc(maxlen, sizeof(char));
 
-  uint8_t buff;
+  // uint8_t buff;
   while (1) {
-    if (x_serial_getc(&buff)) {
-      // x_serial_putc(buff);
-      x_serial_putc('x');
-    } else {
-      x_yield();
-    }
+    // if (x_serial_getc(&buff)) {
+    //   // x_serial_putc(buff);
+    //   x_serial_putc('x');
+    // } else {
+    //   x_yield();
+    // }
+    x_yield();
   }
 }
 
 int main(void) {
   x_init();
 
-  x_new(1, flash0, true);
-  x_new(2, flash1, true);
-  x_new(3, flash2, true);
-  x_new(0, USART2, true);
+  // x_new(1, flash0, true);
+  // x_new(2, flash1, true);
+  // x_new(3, flash2, true);
+  x_new(1, USART, true);
+
+  x_new(0, flash, true);
 }

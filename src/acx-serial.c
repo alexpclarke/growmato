@@ -77,10 +77,10 @@ bool x_serial_putc(uint8_t data) {
   return true;
 }
 
-int x_serial_puts(uint8_t* pdata) {
+int x_serial_puts(char* pdata) {
   int count = 0;
 
-  uint8_t* ptr = pdata;
+  uint8_t* ptr = (uint8_t*)pdata;
   while (*ptr != '\0') {
     while(!Q_putc(&tx_queue, *ptr)) {
       x_yield();

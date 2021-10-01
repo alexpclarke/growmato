@@ -29,10 +29,10 @@
     } PTU;
 
     // Structure for 
-    typedef struct {
-      uint8_t* sp;
-      uint8_t* spBase;
-    } STACK_CONTROL;
+    // typedef struct {
+    //   uint8_t* sp;
+    //   uint8_t* spBase;
+    // } STACK_CONTROL;
 
     // ACX function prototypes
     void x_init(void);

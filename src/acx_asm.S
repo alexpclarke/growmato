@@ -31,33 +31,33 @@ x_yield:
     PUSH r29
 
     ; Set the current thread's stack pointer to the system stack pointer.
-    ; x_stack_control[T_ID].sp <- SP
+    ; *(T_BUFF_START + (T_STACK_SIZE * T_ID) + 2) <- SP
 
-    ; r19:r18 <- T_ID
-    LDS r18, T_ID
-    LDI	r19, 0x00
+    ; X <- T_BUFF_START
+    CLI
+    LDI r26, lo8(T_BUFF_START)
+    LDI	r27, hi8(T_BUFF_START)
+    SEI
+
+    ; X <- X + 2
+    ADIW X, 2
+
+    ; X <- X + (T_STACK_SIZE * T_ID)
+    IN r18, T_ID
+    LDI r20, lo8(T_STACK_SIZE)
+    LDI r21, hi8(T_STACK_SIZE)
+1:  TST r18
+    BREQ 2f
+    ADD r26, r20
+    ADC r27, r21
+    DEC r18
+    JMP 1b
 
     ; r21:r20 <- SP
-    CLI
+2:  CLI
     IN r20, SPL
     IN r21, SPH
     SEI
-
-    ; X <- &x_stack_control[0]
-    CLI
-    LDI r26, lo8(x_stack_control)
-    LDI	r27, hi8(x_stack_control)
-    SEI
-
-    ; X <- X + (4 * r19:r18)
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
-    ADD r26, r18
-    ADC r27, r19
 
     ; (X) <- SP
     ST X+, r20
@@ -67,7 +67,7 @@ x_yield:
     .global	x_schedule
 x_schedule:
     ; Z <- T_ID
-    LDS r30, T_ID
+    IN r30, T_ID
     LDI r31, 0x00
 
     ; Loop through all threads to find the next ready one.
@@ -76,8 +76,8 @@ x_schedule:
     ;   r30 <- (r30 + 0x01) | 0b00000111
     ;   r19 <- 0b00000001 << r30
     ; } while (r18 != r19)
-1:  LDS r18, T_DISABLED_STATUS
-    LDS r19, T_DELAYED_STATUS
+1:  IN r18, T_DISABLED_STATUS
+    IN r19, T_DELAYED_STATUS
     OR r18, r19
     LDI r19, 0b11111111
     EOR r18, r19
@@ -94,26 +94,29 @@ x_schedule:
     BREQ 1b
 
     ; T_ID <- r30
-    STS T_ID, r30
+    OUT T_ID, r30
 
-    ; SP = x_stack_control[T_ID].sp
-    ; X <- x_stack_control
+    ; X <- T_BUFF_START
     CLI
-    LDI r26, lo8(x_stack_control)
-    LDI	r27, hi8(x_stack_control)
+    LDI r26, lo8(T_BUFF_START)
+    LDI	r27, hi8(T_BUFF_START)
     SEI
 
-    ; X <- X + (4 * T_ID)
-    ADD r26, r30
-    ADC r27, r31
-    ADD r26, r30
-    ADC r27, r31
-    ADD r26, r30
-    ADC r27, r31
-    ADD r26, r30
-    ADC r27, r31
+    ; X <- X + 2
+    ADIW X, 2
 
-    ; r19:r18 <- x_stack_control[T_ID].sp
+    ; X <- X + (T_STACK_SIZE * T_ID)
+    IN r18, T_ID
+    LDI r20, lo8(T_STACK_SIZE)
+    LDI r21, hi8(T_STACK_SIZE)
+1:  TST r18
+    BREQ 2f
+    ADD r26, r20
+    ADC r27, r21
+    DEC r18
+    JMP 1b
+
+2:  ; r19:r18 <- x_stack_control[T_ID].sp
     LD r18, X+
     LD r19, X
 
