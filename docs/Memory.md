@@ -26,15 +26,14 @@
 
 | Start  | End    | Description           |
 | ------ | ------ | --------------------- |
-| 0x0000 | 0x03FF | Thread Stacks         |
-| 0x0400 | 0x040F | Thread Delay Counters |
-| 0x0410 | 0x07FF | Unused                |
+| 0x0000 | 0x037F | Unused                |
+| 0x0380 | 0x03FF | Thread Delay Counters |
+| 0x0400 | 0x07FF | Thread Stacks         |
 
 ## EEPROM
 | Start  | End    | Description |
 | ------ | ------ | ----------- |
 | 0x0000 | 0x03FF | Unused      |
-
 
 ## Stack Structure
 

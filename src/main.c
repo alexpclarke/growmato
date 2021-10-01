@@ -9,7 +9,7 @@ void flash() {
   DDRB |= 0b00100000;
   while (1) {
     PORTB ^= 0b00100000;
-    x_delay(2000);
+    x_delay(500);
   }
 }
 
@@ -38,7 +38,7 @@ void flash2() {
   }
 }
 
-void USART() {
+void USART0() {
   x_serial_init(115200, 8, P_NONE, 1, false);
 
   while (1) {
@@ -47,7 +47,7 @@ void USART() {
   }
 }
 
-void USART2() {
+void USART1() {
   // x_serial_init(115200, 8, P_NONE, 1, false);
   // int maxlen = 20;
   // char* buff = calloc(maxlen, sizeof(char));
@@ -67,10 +67,7 @@ void USART2() {
 int main(void) {
   x_init();
 
-  // x_new(1, flash0, true);
-  // x_new(2, flash1, true);
-  // x_new(3, flash2, true);
-  x_new(1, USART, true);
+  x_new(1, USART0, true);
 
   x_new(0, flash, true);
 }
