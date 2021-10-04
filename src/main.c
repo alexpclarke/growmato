@@ -1,7 +1,7 @@
 /* ----- Includes ----- */
-#include "acx.h"
-#include "acx-usart.h"
-#include "acx-twi.h"
+#include "acx/acx.h"
+#include "acx/acx-usart.h"
+#include "acx/acx-twi.h"
 
 /* ----- Main Functions ----- */
 

@@ -2,7 +2,7 @@
 
 void x_twi_init() {
   // Set prescalar to 0.
-  TWSR = 0b00000000;
+  TWSR = TWI_PRESCALAR;
 
   // Set TWI Bit Rate to 400kHz.
   TWBR = 0x0C;
@@ -11,6 +11,7 @@ void x_twi_init() {
   TWCR = (1 << TWEN);
 }
 
+// Sends start signal and wait for it to finish the job.
 void x_twi_start() {
   TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
   while ((TWCR & (1 << TWINT)) == 0) {
@@ -46,7 +47,7 @@ uint8_t x_twi_read_nack() {
   return TWDR;
 }
 
-uint8_t x_twi_getStatus() {
+uint8_t x_twi_get_status() {
   uint8_t status;
   //mask status
   status = TWSR & 0xF8;
@@ -59,10 +60,13 @@ bool x_twi_putc(uint8_t device_address, uint8_t c) {
   PORTC |= 0b00110000;
 
   // Start Condition.
-  // SCL remains high while SDA goes from high to low.
+  x_twi_start();
+
+  if (x_twi_get_status() != 0x08) return false;
 
   // Send Address Packet. 7 address bits, one read/write bit and an acknowledge
   // bit
+  x_twi_write(device_address | (uint8_t)((u16addr & 0x0700)>>7));
 
   // Send Data Packet. 
   // 

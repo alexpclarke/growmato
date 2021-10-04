@@ -12,13 +12,16 @@
 #ifndef ACX_TWI_H_
   #define ACX_TWI_H_
 
+  #define TWI_PRESCALAR 0x00
+  #define TWI_FREQUENCY 
+
   void x_twi_init(void);
   void x_twi_start(void);
   void x_twi_stop(void);
   void x_twi_write(uint8_t u8data);
   uint8_t x_twi_read_ack(void);
   uint8_t x_twi_read_nack(void);
-  uint8_t x_twi_getStatus(void);
+  uint8_t x_twi_get_status(void);
 
   bool x_twi_putc(uint8_t device_address, uint8_t c);
   int x_twi_puts(uint8_t device_address, uint8_t* buffer);
