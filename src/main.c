@@ -1,7 +1,7 @@
 /* ----- Includes ----- */
 #include "acx.h"
-#include "acx-serial.h"
-#include "acx-i2c.h"
+#include "acx-usart.h"
+#include "acx-twi.h"
 
 /* ----- Main Functions ----- */
 
@@ -39,24 +39,24 @@ void flash2() {
 }
 
 void USART0() {
-  x_serial_init(115200, 8, P_NONE, 1, false);
+  x_usart_init(115200, 8, P_NONE, 1, false);
 
   while (1) {
-    x_serial_puts("test\n");
+    x_usart_puts("test\n");
     x_delay(2000);
   }
 }
 
 void USART1() {
-  // x_serial_init(115200, 8, P_NONE, 1, false);
+  // x_usart_init(115200, 8, P_NONE, 1, false);
   // int maxlen = 20;
   // char* buff = calloc(maxlen, sizeof(char));
 
   // uint8_t buff;
   while (1) {
-    // if (x_serial_getc(&buff)) {
-    //   // x_serial_putc(buff);
-    //   x_serial_putc('x');
+    // if (x_usart_getc(&buff)) {
+    //   // x_usart_putc(buff);
+    //   x_usart_putc('x');
     // } else {
     //   x_yield();
     // }

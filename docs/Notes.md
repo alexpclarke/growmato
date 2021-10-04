@@ -11,3 +11,5 @@
 1. [Gammon Forum Interrupts](http://www.gammon.com.au/interrupts)
 2. [avr-libc Interrupts](https://www.nongnu.org/avr-libc/user-manual/group__avr__interrupts.html)
 
+### I2C Resources
+1. [Programming AVR I2C interface](https://embedds.com/programming-avr-i2c-interface/)

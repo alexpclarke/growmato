@@ -1,4 +1,4 @@
-#include "acx-serial.h"
+#include "acx-usart.h"
 
 /* ----- DATA ----- */
 
@@ -27,7 +27,7 @@ ISR (USART_UDRE_vect) {
 
 /* ----- SERIAL PORT FUNCTIONS ----- */
 
-bool x_serial_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t stop_bits, bool u2x) {
+bool x_usart_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t stop_bits, bool u2x) {
   Q_init(&rx_queue, rx_buffer);
   Q_init(&tx_queue, tx_buffer);
 
@@ -64,7 +64,7 @@ bool x_serial_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t st
 
 // Sends a character over the USART port and returns the number of characters
 // transmitted.
-bool x_serial_putc(uint8_t data) {
+bool x_usart_putc(uint8_t data) {
   // Yield until we are able to push our data to the tx queue.
   while(!Q_putc(&tx_queue, data)) {
     x_yield();
@@ -77,7 +77,7 @@ bool x_serial_putc(uint8_t data) {
   return true;
 }
 
-int x_serial_puts(char* pdata) {
+int x_usart_puts(char* pdata) {
   int count = 0;
 
   uint8_t* ptr = (uint8_t*)pdata;
@@ -98,19 +98,19 @@ int x_serial_puts(char* pdata) {
 
 // Gets a character from port n. Returns either a character if one is found or
 // -1 if none is found.
-bool x_serial_getc(uint8_t* dest) {
+bool x_usart_getc(uint8_t* dest) {
   // Get a character from the queue, if none is found return -1.
   return Q_getc(&rx_queue, dest);
 }
 
-int x_serial_gets(uint8_t maxlen, uint8_t* pdata){
+int x_usart_gets(uint8_t maxlen, uint8_t* pdata){
   // Validate pdata.
   if (pdata == ((void*)0)) return 0;
 
   // Get all the characters untill we hit a new line, a null or getc fails.
   int i;
   for (i = 0; i < maxlen - 1; i++) {
-    int val = x_serial_getc(0);
+    int val = x_usart_getc(0);
     if (val == '\n' || val == '\0' || val == -1) break;
     pdata[i] = val;
   }
