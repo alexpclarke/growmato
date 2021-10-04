@@ -11,11 +11,12 @@ void x_init(void) {
   T_ID = 0x00;                      // Set thread 0 to be the current thread.
   T_DISABLED_STATUS = 0b11111110;   // Set all but thread 0 to dissabled.
   T_DELAYED_STATUS = 0b00000000;    // Set all threads to not delayed.
-  for (int i = 0; i < NUM_THREADS; i++)
+  for (int i = 0; i < T_MAX; i++) {
     TN_DELAY(i) = 0x0000;           // Reset each thread's delay counter.
+  }
 
   // Initialize Stack Pointers.
-  for (int i = 0; i < NUM_THREADS; i++) {
+  for (int i = 0; i < T_MAX; i++) {
     TN_SP(i) = (uint16_t)TN_SPBASE(i);
   }
 
@@ -42,7 +43,7 @@ void x_init(void) {
 // Creates a new thread by associating a function pointer with a specified
 // thread ID and stack.
 void x_new(uint8_t tid, PTHREAD pthread, bool isEnabled) {
-  if (tid >= NUM_THREADS) return;
+  if (tid >= T_MAX) return;
 
   // Cast the pthread to a PTU for easier access.
   PTU pt = {.pthread = pthread};
@@ -109,7 +110,7 @@ void x_enable(uint8_t tid) {
 ISR(TIMER0_COMPA_vect) {
   // For each delayed thread, decrement its counter and if the counter is at
   // 0, turn the delay status off.
-  for (int i = 0; i < NUM_THREADS; i++) {
+  for (int i = 0; i < T_MAX; i++) {
     if (T_DELAYED_STATUS & (0x01 << i)) {
       TN_DELAY(i)--;
       if (TN_DELAY(i) == 0) {

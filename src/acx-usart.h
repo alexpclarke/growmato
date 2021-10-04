@@ -1,14 +1,11 @@
-// Author:  Alexander Clarke
-// Date:    2021-09-16
-
-/* ----- Includes ----- */
+// Includes.
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/atomic.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include "acx.h"
-#include "acx-queue.h"
+#include "acx-buffer.h"
 
 #ifndef ACX_USART_H_
   #define ACX_USART_H_

@@ -1,12 +1,13 @@
 #include "acx-twi.h"
 
 void x_twi_init() {
-  // set 0 prescalar
-  TWSR = 0x00;
-  // set SCL to 400kHz
+  // Set prescalar to 0.
+  TWSR = 0b00000000;
+
+  // Set TWI Bit Rate to 400kHz.
   TWBR = 0x0C;
   
-  //enable TWI
+  // Enable TWI.
   TWCR = (1 << TWEN);
 }
 

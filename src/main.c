@@ -66,8 +66,10 @@ void USART1() {
 
 int main(void) {
   x_init();
-
-  x_new(1, USART0, true);
-
-  x_new(0, flash, true);
+  
+  x_new(1, flash0, true);
+  x_new(2, flash1, true);
+  x_new(3, flash2, true);
+  x_new(4, flash, true);
+  x_new(0, USART0, true);
 }

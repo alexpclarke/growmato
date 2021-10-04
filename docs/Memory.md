@@ -45,10 +45,19 @@
 8. Light cycle data
 9. 
 
-## Stack Structure
+## Thread Stack Structure
 
 | Start  | End    | Description           |
 | ------ | ------ | --------------------- |
 | 0x0000 | 0x0001 | Delay                 |
 | 0x0002 | 0x0003 | stack pointer         |
 | 0x0004 | 0x0080 | stack buffer          |
+
+## Ring Buffer Structure
+
+| Start  | End    | Description           |
+| ------ | ------ | --------------------- |
+| 0x0000 | 0x0000 | In Index              |
+| 0x0001 | 0x0001 | Out Index             |
+| 0x0002 | 0x0003 | available             |
+| 0x0004 | 0x0040 | stack buffer          |

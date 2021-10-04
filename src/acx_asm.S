@@ -35,8 +35,8 @@ x_yield:
 
     ; X <- T_BUFF_START
     CLI
-    LDI r26, lo8(T_BUFF_START)
-    LDI	r27, hi8(T_BUFF_START)
+    LDI r26, lo8(T_START)
+    LDI	r27, hi8(T_START)
     SEI
 
     ; X <- X + 2
@@ -44,8 +44,8 @@ x_yield:
 
     ; X <- X + (T_STACK_SIZE * T_ID)
     IN r18, T_ID
-    LDI r20, lo8(T_STACK_SIZE)
-    LDI r21, hi8(T_STACK_SIZE)
+    LDI r20, lo8(T_SIZE)
+    LDI r21, hi8(T_SIZE)
 1:  TST r18
     BREQ 2f
     ADD r26, r20
@@ -98,17 +98,17 @@ x_schedule:
 
     ; X <- T_BUFF_START
     CLI
-    LDI r26, lo8(T_BUFF_START)
-    LDI	r27, hi8(T_BUFF_START)
+    LDI r26, lo8(T_START)
+    LDI	r27, hi8(T_START)
     SEI
 
     ; X <- X + 2
     ADIW X, 2
 
-    ; X <- X + (T_STACK_SIZE * T_ID)
+    ; X <- X + (T_SIZE * T_ID)
     IN r18, T_ID
-    LDI r20, lo8(T_STACK_SIZE)
-    LDI r21, hi8(T_STACK_SIZE)
+    LDI r20, lo8(T_SIZE)
+    LDI r21, hi8(T_SIZE)
 1:  TST r18
     BREQ 2f
     ADD r26, r20

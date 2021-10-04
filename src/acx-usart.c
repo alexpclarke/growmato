@@ -2,23 +2,18 @@
 
 /* ----- DATA ----- */
 
-// Initialize serial port transmit and receive buffers.
-uint8_t rx_buffer[BUFFER_SIZE];
-uint8_t tx_buffer[BUFFER_SIZE];
-
-// Initialize transmit and receive queue control blocks.
-QCB rx_queue;
-QCB tx_queue;
+#define USART_RX_BUFFER 0
+#define USART_TX_BUFFER 1
 
 /* ----- Inerupt Service Routines ----- */
 
 ISR (USART_RX_vect) {
-  Q_putc(&rx_queue, UDR0);
+  b_putc(USART_RX_BUFFER, UDR0);
 }
 
 ISR (USART_UDRE_vect) {
   uint8_t val;
-  if (Q_getc(&tx_queue, &val)) {
+  if (b_getc(USART_TX_BUFFER, &val)) {
     UDR0 = val;
   } else {
     UCSR0B &= 0b11011111;
@@ -28,8 +23,8 @@ ISR (USART_UDRE_vect) {
 /* ----- SERIAL PORT FUNCTIONS ----- */
 
 bool x_usart_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t stop_bits, bool u2x) {
-  Q_init(&rx_queue, rx_buffer);
-  Q_init(&tx_queue, tx_buffer);
+  b_init(USART_RX_BUFFER);
+  b_init(USART_TX_BUFFER);
 
   // Set baud rate.
   uint16_t bitTime = x_calc_baud(speed, u2x);
@@ -66,7 +61,7 @@ bool x_usart_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t sto
 // transmitted.
 bool x_usart_putc(uint8_t data) {
   // Yield until we are able to push our data to the tx queue.
-  while(!Q_putc(&tx_queue, data)) {
+  while(!b_putc(USART_TX_BUFFER, data)) {
     x_yield();
   };
 
@@ -82,7 +77,7 @@ int x_usart_puts(char* pdata) {
 
   uint8_t* ptr = (uint8_t*)pdata;
   while (*ptr != '\0') {
-    while(!Q_putc(&tx_queue, *ptr)) {
+    while(!b_putc(USART_TX_BUFFER, *ptr)) {
       x_yield();
     };
     count++;
@@ -100,7 +95,7 @@ int x_usart_puts(char* pdata) {
 // -1 if none is found.
 bool x_usart_getc(uint8_t* dest) {
   // Get a character from the queue, if none is found return -1.
-  return Q_getc(&rx_queue, dest);
+  return b_getc(USART_RX_BUFFER, dest);
 }
 
 int x_usart_gets(uint8_t maxlen, uint8_t* pdata){
