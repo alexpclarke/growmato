@@ -35,6 +35,16 @@
 | ------ | ------ | ----------- |
 | 0x0000 | 0x03FF | Unused      |
 
+1. Device Name
+2. Description
+3. Time of last boot
+4. Min temperature
+5. Max temperature
+6. Min humidity
+7. Max humidity
+8. Light cycle data
+9. 
+
 ## Stack Structure
 
 | Start  | End    | Description           |
