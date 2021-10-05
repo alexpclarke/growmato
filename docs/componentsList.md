@@ -47,34 +47,34 @@
     https://learn.adafruit.com/dht?view=all
 
 
-# LCD Display
 
-## Info
-Purchase Link: https://www.amazon.com/SunFounder-Serial-Module-Arduino-Mega2560/dp/B01GPUMP9C/ref=sr_1_5?dchild=1&keywords=i2c+lcd&qid=1631548048&sr=8-5
 
-## Associated Values
-1. bool backlight_on
-2. bool screen_inverted
+## LCD Display
 
-## Connections
+Purchase Link: [Amazon](https://www.amazon.com/SunFounder-Serial-Module-Arduino-Mega2560/dp/B01GPUMP9C/ref=sr_1_5?dchild=1&keywords=i2c+lcd&qid=1631548048&sr=8-5)
+
+### Associated Values
+```c
+bool backlight_on;
+bool screen_inverted;
+```
+
+### Connections
 GND - GND
 VCC - 5V
 SDA - SDA
 SCL - SCL
 
-## Driver
+### LCD Controller
 Model: HD44780U
 Datasheet: https://www.sparkfun.com/datasheets/LCD/HD44780.pdf
 Supply Voltage: 2.7V - 5.5V (5V typical)
 Max Frequency: 2MHz
 
-## I2C Driver
-Model: PCF8574
-Info: https://www.ti.com/product/PCF8574
-Datasheet: https://www.ti.com/lit/ds/symlink/pcf8574.pdf?ts=1633313899574&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FPCF8574
-Supply Voltage: 2.5V - 6.0V (5V typical)
-Max Frequency: 100KHz
-Default Address: 0x27 (can be modified)
+### I2C Driver
+Model: PCF8574T
+Datasheet: https://www.nxp.com/docs/en/data-sheet/PCF8574_PCF8574A.pdf
+Default Address: 0x3F
 
 
 # Parts for watering solution:

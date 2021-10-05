@@ -13,3 +13,4 @@
 
 ### I2C Resources
 1. [Programming AVR I2C interface](https://embedds.com/programming-avr-i2c-interface/)
+2. [Accessing an I2C LCD Display using the AVR 2-wire Serial Interface](https://www.microchip.com/content/dam/mchp/documents/OTH/ApplicationNotes/ApplicationNotes/doc1981.pdf)
