@@ -1,16 +1,15 @@
 #include "acx-usart.h"
 
-/* ----- DATA ----- */
-
-#define USART_RX_BUFFER 0
-#define USART_TX_BUFFER 1
-
 /* ----- Inerupt Service Routines ----- */
 
+// If the we recieve a character, push it onto our rx buffer.
 ISR (USART_RX_vect) {
   b_putc(USART_RX_BUFFER, UDR0);
 }
 
+// If the data register is empty and we have something in the tx buffer, pop a
+// value from teh buffer and transmit it. If there are no characters left in the
+// buffer, turn the data register empty interrupt off.
 ISR (USART_UDRE_vect) {
   uint8_t val;
   if (b_getc(USART_TX_BUFFER, &val)) {
@@ -20,13 +19,15 @@ ISR (USART_UDRE_vect) {
   }
 }
 
-/* ----- SERIAL PORT FUNCTIONS ----- */
+/* ----- USART FUNCTIONS ----- */
 
+// Initializes the USART port.
 bool x_usart_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t stop_bits, bool u2x) {
+  // Initialize the rx and tx buffers.
   b_init(USART_RX_BUFFER);
   b_init(USART_TX_BUFFER);
 
-  // Set baud rate.
+  // Set baud rate. If the baudrate is invalid, fail to initialize.
   uint16_t bitTime = x_calc_baud(speed, u2x);
   if (!bitTime) return false;
   UBRR0H = (uint8_t)(bitTime >> 8);
@@ -35,7 +36,7 @@ bool x_usart_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t sto
   // Enable receiver and transmitter.
   UCSR0B = (1 << RXEN0) | (1 << TXEN0);
 
-  // Set the framing.
+  // Clear the framing.
   UCSR0C = 0b00000000;
 
   // Set the parity.
@@ -57,9 +58,9 @@ bool x_usart_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t sto
   return true;
 }
 
-// Sends a character over the USART port and returns the number of characters
-// transmitted.
-bool x_usart_putc(uint8_t data) {
+// Sends a character over the USART port by pushing it to the stack and enabling
+// the data register empty interupt.
+void x_usart_putc(uint8_t data) {
   // Yield until we are able to push our data to the tx queue.
   while(!b_putc(USART_TX_BUFFER, data)) {
     x_yield();
@@ -67,21 +68,29 @@ bool x_usart_putc(uint8_t data) {
 
   // Enable the data regester empty interupt.
   UCSR0B |= (1 << UDRIE0);
-
-  // Return the number of characters successfully put.
-  return true;
 }
 
-int x_usart_puts(char* pdata) {
-  int count = 0;
+void x_usart_putc_hex(uint8_t data) {
+  // TODO
+}
 
-  uint8_t* ptr = (uint8_t*)pdata;
-  while (*ptr != '\0') {
+void x_usart_putc_bin(uint8_t data) {
+  // TODO
+}
+
+// Sends a null terminated string over USART, returning the number of values
+// sent.
+// TODO: does this need to return the number? Barry's version did but i dont
+// know if it's actually useful
+int x_usart_puts(char* pdata) {
+  // Loop untill we hit a null character, pushing them all onto the tx stack,
+  // keeping track of how many we pushed.
+  int count = 0;
+  for (uint8_t* ptr = (uint8_t*)pdata; *ptr; ptr++) {
     while(!b_putc(USART_TX_BUFFER, *ptr)) {
       x_yield();
     };
     count++;
-    ptr++;
   }
 
   // Enable the data regester empty interupt.
@@ -91,13 +100,14 @@ int x_usart_puts(char* pdata) {
   return count;
 }
 
-// Gets a character from port n. Returns either a character if one is found or
-// -1 if none is found.
+// Attempts to get a character from the rx buffer port and returns whether it
+// was successful or not.
 bool x_usart_getc(uint8_t* dest) {
-  // Get a character from the queue, if none is found return -1.
   return b_getc(USART_RX_BUFFER, dest);
 }
 
+// Attempts to get a string of characters from the rx buffer and return the
+// number of characters retrieved.
 int x_usart_gets(uint8_t maxlen, uint8_t* pdata){
   // Validate pdata.
   if (pdata == ((void*)0)) return 0;

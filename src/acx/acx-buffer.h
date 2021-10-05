@@ -7,6 +7,10 @@
 #ifndef ACX_QUEUE_H_
   #define ACX_QUEUE_H_
 
+  // Buffer assignment.
+  #define USART_RX_BUFFER 0
+  #define USART_TX_BUFFER 1
+
   // The size of each serial buffer.
   #define B_SIZE 0x40
   #define B_MAX 4

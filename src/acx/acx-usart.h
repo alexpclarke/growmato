@@ -20,7 +20,9 @@
 
   /* ----- Prototypes ----- */
   bool x_usart_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t stop_bits, bool u2x);
-  bool x_usart_putc(uint8_t c);
+  void x_usart_putc(uint8_t c);
+  void x_usart_putc_hex(uint8_t c);
+  void x_usart_putc_bin(uint8_t c);
   int x_usart_puts(char* buffer);
   bool x_usart_getc(uint8_t* dest);
   int x_usart_gets(uint8_t maxlen, uint8_t* dest_buffer);
