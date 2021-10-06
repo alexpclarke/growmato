@@ -27,8 +27,18 @@
     int humidityLevel
     int temperature
     bool power
-### address: 
+### Address: 
     Can be selected (SHT30)
+
+### Commands:
+    Fetch Data: 0xe000
+    Periodic Measurement with ART: 0x2b32
+    Break: 0x3093
+    Heater Enable/Disable: 0x30
+    Soft Reset: 0x30a2
+    Clear status register: 0x3041
+    Read out of status of register: 0xf32d
+
 
 ## Adafruit SHT30 Temperature and Humidity Sensor (I2C)
     https://www.adafruit.com/product/5064
@@ -48,12 +58,32 @@
 
 # Parts for watering solution:
 
-## Specifications:
-
-
 ## Video for watering solution: 
     https://www.youtube.com/watch?v=ioSYlxHlYdI
 
 ## Valve:
-    https://bc-robotics.com/shop/water-solenoid-valve-dn15/
+### Links:
+    https://www.adafruit.com/product/997    
+    https://media.digikey.com/pdf/Data%20Sheets/Adafruit%20PDFs/997_Web.pdf
     https://bc-robotics.com/tutorials/controlling-a-solenoid-valve-with-arduino/
+    https://www.qcsupply.com/120150-solenoid-valve-with-flow-control-1-110-volt.html (Flow Control)
+    https://www.qcsupply.com/media/product_attachments/attachment_file/1/2/120150_SS.pdf (Flow Control)
+
+### Specifications:
+#### Power Options: 
+    Off/On
+#### Data type:
+    bool Power
+#### Address: N/A?
+
+
+# Realtime Clock
+
+## Datasheet:
+    https://datasheets.maximintegrated.com/en/ds/DS1307.pdf
+
+## Address:
+    The RTC registers are located in address locations 00h to 07h.
+
+## Power
+    VCC = 4.5V - 5.5V
