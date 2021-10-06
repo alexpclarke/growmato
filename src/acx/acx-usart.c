@@ -72,10 +72,12 @@ void x_usart_putc(uint8_t data) {
 
 void x_usart_putc_hex(uint8_t data) {
   // TODO
+  while (!b_putc(USART_TX_BUFFER, data)) x_yield();
 }
 
 void x_usart_putc_bin(uint8_t data) {
   // TODO
+  while (!b_putc(USART_TX_BUFFER, data)) x_yield();
 }
 
 // Sends a null terminated string over USART, returning the number of values
