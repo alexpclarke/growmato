@@ -56,6 +56,37 @@
     https://www.adafruit.com/product/386
     https://learn.adafruit.com/dht?view=all
 
+
+
+
+## LCD Display
+
+Purchase Link: [Amazon](https://www.amazon.com/SunFounder-Serial-Module-Arduino-Mega2560/dp/B01GPUMP9C/ref=sr_1_5?dchild=1&keywords=i2c+lcd&qid=1631548048&sr=8-5)
+
+### Associated Values
+```c
+bool backlight_on;
+bool screen_inverted;
+```
+
+### Connections
+GND - GND
+VCC - 5V
+SDA - SDA
+SCL - SCL
+
+### LCD Controller
+Model: HD44780U
+Datasheet: https://www.sparkfun.com/datasheets/LCD/HD44780.pdf
+Supply Voltage: 2.7V - 5.5V (5V typical)
+Max Frequency: 2MHz
+
+### I2C Driver
+Model: PCF8574T
+Datasheet: https://www.nxp.com/docs/en/data-sheet/PCF8574_PCF8574A.pdf
+Default Address: 0x3F
+
+
 # Parts for watering solution:
 
 ## Video for watering solution: 

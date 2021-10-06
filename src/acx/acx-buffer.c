@@ -1,30 +1,27 @@
-#include "acx-queue.h"
+#include "acx-buffer.h"
 
-// Initialize a specified Queue. Returns true if successful.
-bool Q_init(QCB* qcb, uint8_t* buffer_) {
-  qcb->in = 0;
-  qcb->out = 0;
-  qcb->available = 0;
-  qcb->buffer = buffer_;
-  return true;
+void b_init(uint8_t b_id) {
+  BN_IN(b_id) = 0;
+  BN_OUT(b_id) = 0;
+  BN_AVAILABLE(b_id) = (uint8_t)0;
 }
 
 // Gets a char from specified queue.
-bool Q_getc(QCB* qcb, uint8_t* valPtr) {
+bool b_getc(uint8_t b_id, uint8_t* valPtr) {
   // Check that there are available characters to get. If there are none, fail.
-  if (qcb->available == 0) return false;
+  if (!BN_AVAILABLE(b_id)) return false;
 
   // Enter atomic block while we change things.
   ATOMIC_BLOCK (ATOMIC_RESTORESTATE) {
     // Copy the value in the buffer at the out index to pval.
-    *valPtr = qcb->buffer[qcb->out];
+    *valPtr = BN_BASE(b_id)[BN_OUT(b_id)];
 
     // Advance the out index.
-    qcb->out++;
-    qcb->out %= BUFFER_SIZE;
+    BN_OUT(b_id)++;
+    BN_OUT(b_id) %= B_SIZE;
 
     // Update available.
-    qcb->available--;
+    BN_AVAILABLE(b_id)--;
   }
 
   // Successfully got a character.
@@ -32,21 +29,21 @@ bool Q_getc(QCB* qcb, uint8_t* valPtr) {
 }
 
 // Writes a char to specified queue.
-bool Q_putc(QCB* qcb, uint8_t val) {
+bool b_putc(uint8_t b_id, uint8_t val) {
   // Check that the requested queue is full. If it is, fail.
-  if (qcb->available >= BUFFER_SIZE) return false;
+  if (BN_AVAILABLE(b_id) >= B_SIZE) return false;
 
   // Enter atomic block while we change things.
   ATOMIC_BLOCK (ATOMIC_RESTORESTATE) {
     // Copy the value in the buffer at the out index to pval.
-    qcb->buffer[qcb->in] = val;
+    BN_BASE(b_id)[BN_IN(b_id)] = val;
 
     // Advance the in index.
-    qcb->in++;
-    qcb->in %= BUFFER_SIZE;
+    BN_IN(b_id)++;
+    BN_IN(b_id) %= B_SIZE;
 
     // Update available.
-    qcb->available++;
+    BN_AVAILABLE(b_id)++;
   }
 
   // Successfully put a character on the stack.
