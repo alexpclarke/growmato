@@ -2,7 +2,7 @@
 #include "acx/acx-usart.h"
 #include "acx/acx-twi.h"
 
-#define LCD_ADDRESS 0x3F
+#define LCD_ADDRESS 0x27
 
 #define LCD_CLEARDISPLAY    0x01
 #define LCD_RETURNHOME      0x02
@@ -18,11 +18,9 @@ void LCD() {
 
   x_twi_init();
 
-  if (x_twi_putc(0b00110000, LCD_ADDRESS)) {
-    x_usart_puts("success\n");
-  } else {
-    x_usart_puts("fail\n");
-  }
+  uint8_t command = LCD_CLEARDISPLAY;
+
+
 
   
   // x_usart_putc('\n');
@@ -45,6 +43,11 @@ void LCD() {
   // x_twi_putc(0b00000110, LCD_ADDRESS);
 
   while (1) {
+    if (x_twi_writeTo(LCD_ADDRESS, &command, 1)) {
+      // x_usart_puts("success\n");
+    } else {
+      // x_usart_puts("fail\n");
+    }
     x_delay(1000);
   }
 }

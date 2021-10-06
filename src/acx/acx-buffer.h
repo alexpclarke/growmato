@@ -10,6 +10,8 @@
   // Buffer assignment.
   #define USART_RX_BUFFER 0
   #define USART_TX_BUFFER 1
+  #define TWI_RX_BUFFER 2
+  #define TWI_TX_BUFFER 3
 
   // The size of each serial buffer.
   #define B_SIZE 0x40

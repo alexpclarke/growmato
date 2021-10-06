@@ -2,7 +2,7 @@
   #define ACX_H_
 
   // General system info.
-  #define CLOCK_HZ 16000000
+  #define CLOCK_HZ 16000000L
   #define SRAM_SIZE 0x800
   #define EEPROM_SIZE 0x400
 

@@ -11,6 +11,16 @@
 1. [Gammon Forum Interrupts](http://www.gammon.com.au/interrupts)
 2. [avr-libc Interrupts](https://www.nongnu.org/avr-libc/user-manual/group__avr__interrupts.html)
 
-### I2C Resources
+## I2C Resources
+
+### links
+
 1. [Programming AVR I2C interface](https://embedds.com/programming-avr-i2c-interface/)
 2. [Accessing an I2C LCD Display using the AVR 2-wire Serial Interface](https://www.microchip.com/content/dam/mchp/documents/OTH/ApplicationNotes/ApplicationNotes/doc1981.pdf)
+
+### Associated values
+
+```c
+uint8_t twi_state;
+```
+
