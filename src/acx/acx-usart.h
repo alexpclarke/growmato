@@ -15,9 +15,6 @@
   #define P_EVEN 1
   #define P_ODD 2
 
-  #define USART_RX_BUFF_START
-  #define USART_TX_BUFF_START
-
   /* ----- Prototypes ----- */
   bool x_usart_init(uint32_t speed, uint8_t data_bits, uint8_t parity, uint8_t stop_bits, bool u2x);
   void x_usart_putc(uint8_t c);
@@ -25,6 +22,9 @@
   void x_usart_putc_bin(uint8_t c);
   int x_usart_puts(char* buffer);
   bool x_usart_getc(uint8_t* dest);
-  int x_usart_gets(uint8_t maxlen, uint8_t* dest_buffer);
-  uint16_t x_calc_baud(uint32_t speed, bool u2x);
+  uint8_t x_usart_gets(uint8_t maxlen, char* dest_buffer);
+  bool x_usart_set_baud(uint32_t speed, bool u2x);
+  bool x_usart_set_data_bits(uint8_t data_bits);
+  bool x_usart_set_parity(uint8_t parity);
+  bool x_usart_set_stop_bits(uint8_t stop_bits);
 #endif

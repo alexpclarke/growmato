@@ -14,7 +14,7 @@
   #define ACX_TWI_H_
 
   #define TWI_PRESCALAR   0x00
-  #define TWI_FREQUENCY   100000L
+  #define TWI_FREQUENCY   10000L
   #define TWIS            (TWSR & 0xF8)
 
   // TWI states.

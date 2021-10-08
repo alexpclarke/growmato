@@ -3,14 +3,19 @@
 
 static volatile uint8_t twi_state;
 static volatile uint8_t twi_slarw;
+static volatile uint8_t twi_sendStop;
+static volatile uint8_t twi_inRepStart;
+static volatile uint8_t twi_error;
 
 void x_twi_init() {
   // initialize state
   twi_state = TWI_READY;
+  twi_sendStop = true;
+  twi_inRepStart = false;
 
   // activate internal pullups for the SDA and SCL pins.
   DDRC |= _BV(DDC4) | _BV(DDC5);
-  PORTC |= _BV(PORTC4) | _BV(PORTC5);
+  // PORTC |= _BV(PORTC4) | _BV(PORTC5);
 
   // Set prescalar and bit rate.
   x_twi_set_frequency(TWI_FREQUENCY, TWI_PRESCALAR);
@@ -43,15 +48,24 @@ void x_twi_disable() {
 
 // Sends start signal and wait for it to finish the job.
 void x_twi_start() {
-  TWCR = _BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE) | _BV(TWSTA);
-  while ((TWCR & _BV(TWINT)) == 0) {
-    // x_yield();
-  }
+  TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT) | _BV(TWSTA);
+ 
+  // while ((TWCR & _BV(TWSTO))) {
+  //   // x_yield();
+  // }
+
+  // update twi state
+  twi_state = TWI_READY;
 }
 
 void x_twi_stop() {
-  TWCR = _BV(TWINT) | _BV(TWSTO) | _BV(TWEN);
+  TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT) | _BV(TWSTO);
 
+  while ((TWCR & _BV(TWSTO))) {
+    // x_yield();
+  }
+
+  // update twi state
   twi_state = TWI_READY;
 }
 
@@ -139,18 +153,28 @@ ISR (TWI_vect) {
   switch (val) {
     case TWIS_START:
     case TWIS_REP_START:
+      x_usart_putc('s');
       TWDR = twi_slarw;
       x_twi_reply(1);
       break;
     case TWIS_MT_SLA_ACK:
     case TWIS_MT_DATA_ACK:
+      x_usart_putc('a');
       if (b_getc(TWI_TX_BUFFER, &myval)) {
         TWDR = myval;
       } else {
         x_twi_stop();
       }
       break;
+    case TWIS_MT_SLA_NACK:
+    case TWIS_MT_DATA_NACK:
+      x_usart_putc('n');
+      break;
+    case TWIS_MR_SLA_NACK:
+      x_twi_stop();
+      break;
     default:
+      x_usart_putc('x');
       break;
   }
 }
