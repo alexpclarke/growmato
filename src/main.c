@@ -1,43 +1,12 @@
 /* ----- Includes ----- */
 #include "acx/acx.h"
 #include "acx/acx-usart.h"
-// #include "acx/acx-twi.h"
-// #include "LCD.c"
-
-
-void LCD(void);
-
-/* ----- Main Functions ----- */
+#include "components/LCD.h"
 
 void flash() {
-  DDRB |= 0b00100000;
+  DDRB |= _BV(DDB5);
   while (1) {
-    PORTB ^= 0b00100000;
-    x_delay(500);
-  }
-}
-
-void flash0() {
-  DDRB |= 0b00000001;
-  while (1) {
-    PORTB ^= 0b00000001;
-    x_delay(500);
-  }
-}
-
-void flash1() {
-  DDRB |= 0b00000010;
-  x_delay(500);
-  while (1) {
-    PORTB ^= 0b00000010;
-    x_delay(500);
-  }
-}
-
-void flash2() {
-  DDRB |= 0b00000100;
-  while (1) {
-    PORTB ^= 0b00000100;
+    PORTB ^= _BV(PORTB5);
     x_delay(500);
   }
 }
@@ -52,8 +21,6 @@ void USART_print() {
 }
 
 void USART_echo() {
-  x_usart_init(9600, 8, P_NONE, 1, false);
-
   uint8_t maxlen = 20;
   char* buff = calloc(maxlen, sizeof(char));
 
@@ -67,6 +34,9 @@ void USART_echo() {
 
 int main(void) {
   x_init();
+  x_usart_init(9600, 8, P_NONE, 1, false);
+  x_twi_init();
   
+  x_new(1, flash, true);
   x_new(0, USART_echo, true);
 }

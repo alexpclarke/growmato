@@ -15,7 +15,7 @@
 
   #define TWI_PRESCALAR   0x00
   #define TWI_FREQUENCY   10000L
-  #define TWIS            (TWSR & 0xF8)
+  #define TWS            (TWSR & 0xF8)
 
   // TWI states.
   #define TWI_READY 0
@@ -23,46 +23,44 @@
   #define TWI_MTX   2
   #define TWI_SRX   3
   #define TWI_STX   4
+  #define TWI_INIT  5
 
   /* ----- TWI Statuses ----- */
 
   // Master
-  #define TWIS_START                  0x08 
-  #define TWIS_REP_START              0x10
+  #define TWS_START                  0x08 
+  #define TWS_REP_START              0x10
   // Master Tramsmitter
-  #define TWIS_MT_SLA_ACK             0x18
-  #define TWIS_MT_SLA_NACK            0x20
-  #define TWIS_MT_DATA_ACK            0x28
-  #define TWIS_MT_DATA_NACK           0x30
-  #define TWIS_MT_ARB_LOST            0x38
+  #define TWS_MT_SLA_ACK             0x18
+  #define TWS_MT_SLA_NACK            0x20
+  #define TWS_MT_DATA_ACK            0x28
+  #define TWS_MT_DATA_NACK           0x30
+  #define TWS_MT_ARB_LOST            0x38
   // Master Reciever
-  #define TWIS_MR_SLA_ACK             0x40
-  #define TWIS_MR_SLA_NACK            0x48
-  #define TWIS_MR_DATA_ACK            0x50
-  #define TWIS_MR_DATA_NACK           0x58
-  #define TWIS_MR_ARB_LOST            0x38
+  #define TWS_MR_SLA_ACK             0x40
+  #define TWS_MR_SLA_NACK            0x48
+  #define TWS_MR_DATA_ACK            0x50
+  #define TWS_MR_DATA_NACK           0x58
+  #define TWS_MR_ARB_LOST            0x38
   // Slave Reciever
-  #define TWIS_SR_SLA_ACK             0x60
-  #define TWIS_SR_ARB_LOST_SLA_ACK    0x68
-  #define TWIS_SR_GCALL_ACK           0x70
-  #define TWIS_SR_ARB_LOST_GCALL_ACK  0x78
-  #define TWIS_SR_DATA_ACK            0x80
-  #define TWIS_SR_DATA_NACK           0x88
-  #define TWIS_SR_GCALL_DATA_ACK      0x90
-  #define TWIS_SR_GCALL_DATA_NACK     0x98
-  #define TWIS_SR_STOP                0xA0
+  #define TWS_SR_SLA_ACK             0x60
+  #define TWS_SR_ARB_LOST_SLA_ACK    0x68
+  #define TWS_SR_GCALL_ACK           0x70
+  #define TWS_SR_ARB_LOST_GCALL_ACK  0x78
+  #define TWS_SR_DATA_ACK            0x80
+  #define TWS_SR_DATA_NACK           0x88
+  #define TWS_SR_GCALL_DATA_ACK      0x90
+  #define TWS_SR_GCALL_DATA_NACK     0x98
+  #define TWS_SR_STOP                0xA0
   // Slave Tramsmitter
-  #define TWIS_ST_SLA_ACK             0xA8
-  #define TWIS_ST_ARB_LOST_SLA_ACK    0xB0
-  #define TWIS_ST_DATA_ACK            0xB8 
-  #define TWIS_ST_DATA_NACK           0xC0
-  #define TWIS_ST_LAST_DATA           0xC8
+  #define TWS_ST_SLA_ACK             0xA8
+  #define TWS_ST_ARB_LOST_SLA_ACK    0xB0
+  #define TWS_ST_DATA_ACK            0xB8 
+  #define TWS_ST_DATA_NACK           0xC0
+  #define TWS_ST_LAST_DATA           0xC8
   // Misc.
-  #define TWIS_NO_INFO                0xF8
-  #define TWIS_BUS_ERROR              0x00
-
-
-  #define TWIS_W
+  #define TWS_NO_INFO                0xF8
+  #define TWS_BUS_ERROR              0x00
 
   void x_twi_init(void);
   void x_twi_start(void);
