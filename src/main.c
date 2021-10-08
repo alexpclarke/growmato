@@ -1,6 +1,5 @@
 /* ----- Includes ----- */
 #include "acx/acx.h"
-#include "acx/acx-usart.h"
 #include "components/LCD.h"
 
 void flash() {
