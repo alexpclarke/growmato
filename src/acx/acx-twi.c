@@ -2,11 +2,17 @@
 #include "acx-usart.h"
 
 static volatile uint8_t twi_state;
-static volatile uint8_t twi_slarw;
+
+// static volatile uint8_t twi_slarw;
+// static volatile uint8_t twi_sendStop;
+static volatile uint8_t twi_inRepStart;
+static volatile uint8_t twi_error;
 
 void x_twi_init() {
   // initialize state
   twi_state = TWI_READY;
+  // twi_sendStop = true;
+  twi_inRepStart = false;
 
   // activate internal pullups for the SDA and SCL pins.
   DDRC |= _BV(DDC4) | _BV(DDC5);
@@ -16,7 +22,8 @@ void x_twi_init() {
   x_twi_set_frequency(TWI_FREQUENCY, TWI_PRESCALAR);
   
   // Enable TWI, acks, and interrupts.
-  TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA);
+  // TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA);
+  TWCR = _BV(TWEN) | _BV(TWIE);
 }
 
 
@@ -43,15 +50,26 @@ void x_twi_disable() {
 
 // Sends start signal and wait for it to finish the job.
 void x_twi_start() {
-  TWCR = _BV(TWINT) | _BV(TWEA) | _BV(TWEN) | _BV(TWIE) | _BV(TWSTA);
-  while ((TWCR & _BV(TWINT)) == 0) {
-    // x_yield();
-  }
+  // TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT) | _BV(TsWSTA);
+  TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT) | _BV(TWSTA);
+ 
+  // while ((TWCR & _BV(TWSTO))) {
+  //   // x_yield();
+  // }
+
+  // update twi state
+  twi_state = TWI_READY;
 }
 
 void x_twi_stop() {
-  TWCR = _BV(TWINT) | _BV(TWSTO) | _BV(TWEN);
+  // TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT) | _BV(TWSTO);
+  TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT) | _BV(TWSTO);
 
+  // while ((TWCR & _BV(TWSTO))) {
+    // x_yield();
+  // }
+
+  // update twi state
   twi_state = TWI_READY;
 }
 
@@ -97,12 +115,7 @@ bool x_twi_writeTo(uint8_t address, uint8_t* data, uint8_t length) {
   if (length > B_SIZE) return false;
 
   // Wait untill TWI is ready
-  while (twi_state != TWI_READY) {
-    x_yield();
-  }
-
-  // become master.
-  twi_state = TWI_MTX;
+  while (twi_state != TWI_READY) x_yield();
 
   // Initialize the two buffers.
   // b_init(TWI_RX_BUFFER);
@@ -113,9 +126,12 @@ bool x_twi_writeTo(uint8_t address, uint8_t* data, uint8_t length) {
     b_putc(TWI_TX_BUFFER, data[i]);
   }
 
+  // become master.
+  twi_state = TWI_INIT;
+
   // set SLARW
-  twi_slarw = 1;
-  twi_slarw |= address << 1;
+  // twi_slarw = 1;
+  // twi_slarw |= address << 1;
 
   // Send start condition.
   x_twi_start();
@@ -130,27 +146,32 @@ bool x_twi_writeTo(uint8_t address, uint8_t* data, uint8_t length) {
 
 
 
-
-
 ISR (TWI_vect) {
-  uint8_t val = TWIS;
-  uint8_t myval;
-
-  switch (val) {
-    case TWIS_START:
-    case TWIS_REP_START:
-      TWDR = twi_slarw;
-      x_twi_reply(1);
+  switch (TWS) {
+    case TWS_START:
+    case TWS_REP_START:
+      x_usart_putc('s');
+      // TWDR = twi_slarw;
+      // x_twi_reply(1);
       break;
-    case TWIS_MT_SLA_ACK:
-    case TWIS_MT_DATA_ACK:
-      if (b_getc(TWI_TX_BUFFER, &myval)) {
-        TWDR = myval;
-      } else {
-        x_twi_stop();
-      }
+    case TWS_MT_SLA_ACK:
+    case TWS_MT_DATA_ACK:
+      x_usart_putc('a');
+      // if (b_getc(TWI_TX_BUFFER, &myval)) {
+      //   TWDR = myval;
+      // } else {
+      //   x_twi_stop();
+      // }
+      break;
+    case TWS_MT_SLA_NACK:
+    case TWS_MT_DATA_NACK:
+      x_usart_putc('n');
+      break;
+    case TWS_MR_SLA_NACK:
+      x_twi_stop();
       break;
     default:
+      x_usart_putc('x');
       break;
   }
 }
