@@ -12,6 +12,7 @@
 
 ## Adafruit STEMMA (I2C):
     https://learn.adafruit.com/introducing-adafruit-stemma-qt/technical-specs
+    https://cdn-learn.adafruit.com/downloads/pdf/adafruit-stemma-soil-sensor-i2c-capacitive-moisture-sensor.pdf?timestamp=1634069203
 
 ## SparkFun Qwiic (I2C):
     https://www.sparkfun.com/products/17731
