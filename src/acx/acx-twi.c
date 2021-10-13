@@ -1,43 +1,37 @@
 #include "acx-twi.h"
-#include "acx-usart.h"
 
 static volatile uint8_t twi_state;
-
-// static volatile uint8_t twi_slarw;
-// static volatile uint8_t twi_sendStop;
-static volatile uint8_t twi_inRepStart;
-static volatile uint8_t twi_error;
+static volatile uint8_t twi_in_rep_start;
 
 void x_twi_init() {
   // initialize state
   twi_state = TWI_READY;
   // twi_sendStop = true;
-  twi_inRepStart = false;
+  twi_in_rep_start = false;
 
   // activate internal pullups for the SDA and SCL pins.
-  DDRC |= _BV(DDC4) | _BV(DDC5);
-  PORTC |= _BV(PORTC4) | _BV(PORTC5);
+  // DDRC |= _BV(DDC4) | _BV(DDC5);
+  // PORTC |= _BV(PORTC4) | _BV(PORTC5);
 
   // Set prescalar and bit rate.
   x_twi_set_frequency(TWI_FREQUENCY, TWI_PRESCALAR);
   
   // Enable TWI, acks, and interrupts.
-  // TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA);
   TWCR = _BV(TWEN) | _BV(TWIE);
 }
 
-
+// Set prescalar and bit rate.
 void x_twi_set_frequency(uint32_t freq, uint8_t prescalar) {
-  // Set prescalar and bit rate.
   TWSR = prescalar & 0x00000011;
   TWBR = ((CLOCK_HZ / freq) - 16) / 2;
 }
 
+// Set device's slave address.
 void twi_setAddress(uint8_t address) {
   TWAR = address << 1;
 }
 
-
+// Disable the TWI Bus.
 void x_twi_disable() {
   // disable TWI, acks, and interrupts.
   TWCR = ~(_BV(TWEN) | _BV(TWIE) | _BV(TWEA));
@@ -47,78 +41,61 @@ void x_twi_disable() {
   PORTC &= ~(_BV(PORTC4) | _BV(PORTC5));
 }
 
-
-// Sends start signal and wait for it to finish the job.
+// Send the START signal, enable interrupts and TWI, clear TWINT flag to resume
+// transfer.
 void x_twi_start() {
-  // TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT) | _BV(TsWSTA);
-  TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT) | _BV(TWSTA);
- 
-  // while ((TWCR & _BV(TWSTO))) {
-  //   // x_yield();
-  // }
+  // Enable the start condition bit.
+  TWCR |= _BV(TWSTA);
 
-  // update twi state
-  twi_state = TWI_READY;
+  // Ensure that TWI module and interrupts are enabled.
+  TWCR |= _BV(TWEN) | _BV(TWIE);
+  
+  // Clear the TWINT.
+  TWCR |= _BV(TWINT);
 }
 
+// Send the STOP signal, enable interrupts and TWI, clear TWINT flag.
 void x_twi_stop() {
   // TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT) | _BV(TWSTO);
   TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT) | _BV(TWSTO);
 
-  // while ((TWCR & _BV(TWSTO))) {
-    // x_yield();
-  // }
-
   // update twi state
-  twi_state = TWI_READY;
+  // twi_state = TWI_READY;
 }
 
-void x_twi_write(uint8_t u8data) {
-  TWDR = u8data;
-  TWCR = _BV(TWINT) | _BV(TWEN);
-  while ((TWCR & _BV(TWINT)) == 0) {
-    // x_yield();
-  }
+// Used to resume a transfer, clear TWINT and ensure that TWI and interrupts are
+// enabled.
+void x_twi_write(uint8_t val) {
+  // Load the value into TWDR.
+  TWDR = val;
+
+  // Clear the TWINT bit to continue transfer.
+  // TWCR |= _BV(TWINT) | _BV(TWEN) | _BV(TWIE);
+  TWCR |= _BV(TWINT);
 }
 
-uint8_t x_twi_read_ack() {
-  TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWEA);
-  while ((TWCR & _BV(TWINT)) == 0) {
-    // x_yield();
-  }
-  return TWDR;
+// FOR MR mode. Resume a transfer, ensure that TWI and interrupts are enabled
+// and respond with an ACK if the device is addressed as a slave or after it
+// receives a byte.
+void x_twi_ack() {
+  TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE) | _BV(TWEA);
 }
 
-// read byte with NACK.
-uint8_t x_twi_read_nack() {
-  TWCR = _BV(TWINT) | _BV(TWEN);
-  while ((TWCR & _BV(TWINT)) == 0) {
-    // x_yield();
-  }
-  return TWDR;
+// FOR MR mode. Resume a transfer, ensure that TWI and interrupts are enabled
+// but DO NOT respond with an ACK if the device is addressed as a slave or after
+// it receives a byte.
+void x_twi_nack() {
+  TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE);
 }
 
-// sends byte or readys recieve line.
-void x_twi_reply(bool ack) {
-  // transmit master read ready signal, with or without ack
-  if (ack) {
-    TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT) | _BV(TWEA);
-  } else {
-    TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT);
-  }
-}
-
-
-
-bool x_twi_writeTo(uint8_t address, uint8_t* data, uint8_t length) {
+bool x_twi_transmit(uint8_t address, uint8_t* data, uint8_t length, bool sendStop) {
   // Ensure the buffer is large enough.
   if (length > B_SIZE) return false;
 
   // Wait untill TWI is ready
   while (twi_state != TWI_READY) x_yield();
 
-  // Initialize the two buffers.
-  // b_init(TWI_RX_BUFFER);
+  // Initialize the buffer.
   b_init(TWI_TX_BUFFER);
 
   // Copy the data to the buffer.
@@ -126,50 +103,37 @@ bool x_twi_writeTo(uint8_t address, uint8_t* data, uint8_t length) {
     b_putc(TWI_TX_BUFFER, data[i]);
   }
 
-  // become master.
-  twi_state = TWI_INIT;
+  if (twi_state == TWI_REPSTART) {
+    // TODO
+  } else {
+    // Become master.
+    twi_state = TWI_INIT;
 
-  // set SLARW
-  // twi_slarw = 1;
-  // twi_slarw |= address << 1;
-
-  // Send start condition.
-  x_twi_start();
-
-  // wait for write to complete
-  while (twi_state == TWI_MTX) {
-    x_yield();
+    // Send start condition.
+    x_twi_start();
   }
 
   return true;
 }
 
-
-
 ISR (TWI_vect) {
   switch (TWS) {
     case TWS_START:
-    case TWS_REP_START:
-      x_usart_putc('s');
-      // TWDR = twi_slarw;
-      // x_twi_reply(1);
+      x_usart_puts("start sent\n");
       break;
+    
     case TWS_MT_SLA_ACK:
-    case TWS_MT_DATA_ACK:
-      x_usart_putc('a');
-      // if (b_getc(TWI_TX_BUFFER, &myval)) {
-      //   TWDR = myval;
-      // } else {
-      //   x_twi_stop();
-      // }
+      x_usart_puts("tx success\n");
       break;
+
     case TWS_MT_SLA_NACK:
-    case TWS_MT_DATA_NACK:
-      x_usart_putc('n');
+      x_usart_puts("tx fail\n");
       break;
-    case TWS_MR_SLA_NACK:
-      x_twi_stop();
+    
+    case TWS_MT_ARB_LOST:
+      x_usart_puts("tx arbitration lost\n");
       break;
+
     default:
       x_usart_putc('x');
       break;

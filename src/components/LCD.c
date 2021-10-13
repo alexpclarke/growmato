@@ -25,7 +25,7 @@ void LCD() {
   // x_twi_putc(0b00000110, LCD_ADDRESS);
 
   while (1) {
-    x_twi_writeTo(LCD_ADDRESS, &command, 1);
+    // x_twi_writeTo(LCD_ADDRESS, &command, 1);
     x_delay(1000);
   }
 }
