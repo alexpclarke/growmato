@@ -7,8 +7,9 @@ Purchase Link: [Amazon](https://www.amazon.com/SunFounder-Serial-Module-Arduino-
 ### Associated Values
 
 ```c
-bool backlight_on;
-bool screen_inverted;
+bool LCD_backlight;
+bool LCD_inverted;
+uint8_t LCD_displayfunction
 ```
 
 ### Connections

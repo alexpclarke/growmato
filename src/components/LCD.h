@@ -3,6 +3,7 @@
 
   #include "acx/acx.h"
   #include "acx/acx-twi.h"
+  #include "components/PCF8574.h"
 
   #define LCD_ADDRESS 0x27
 

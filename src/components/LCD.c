@@ -1,6 +1,6 @@
 #include "LCD.h"
 
-uint8_t LCD_backlight = LCD_NOBACKLIGHT;
+bool LCD_backlight;
 uint8_t LCD_lines;
 uint8_t LCD_displayfunction;
 
@@ -15,7 +15,7 @@ void LCD() {
 
 void LCD_init(uint8_t cols, uint8_t lines) {
   // Reset the backlight.
-  LCD_backlight = LCD_NOBACKLIGHT;
+  LCD_backlight = false;
 
   // Clear the display function.
   LCD_displayfunction = 0b00000000;
@@ -30,17 +30,7 @@ void LCD_init(uint8_t cols, uint8_t lines) {
   // Set dot size.
   LCD_displayfunction |= LCD_4BITMODE;
 
-  // Delay for 50ms
-  x_delay(50);
-
-  x_twi_transmit(LCD_ADDRESS, &LCD_backlight, 1, true);
-  x_delay(5);
-
-  uint8_t temp_val = 0x03 << 4;
-  x_twi_transmit(LCD_ADDRESS, temp_val | LCD_backlight, 1, true);
-  x_twi_transmit(LCD_ADDRESS, temp_val | LCD_backlight, 1, true);
-  x_delay(5);
-
+  // TODO: Initialization dance.
 }
 
 void LCD_set_backlight(bool val) {
