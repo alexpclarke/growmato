@@ -15,4 +15,19 @@
   #define LCD_SETCGRAMADDR    0x40
   #define LCD_SETDDRAMADDR    0x80
 
+  // flags for function set
+  #define LCD_8BITMODE 0x10
+  #define LCD_4BITMODE 0x00
+  #define LCD_2LINE 0x08
+  #define LCD_1LINE 0x00
+  #define LCD_5x10DOTS 0x04
+  #define LCD_5x8DOTS 0x00
+
+  // flags foor backlight
+  #define LCD_BACKLIGHT 0x08
+  #define LCD_NOBACKLIGHT 0x00  
+
+  void LCD(void);
+  void LCD_init(uint8_t cols, uint8_t lines);
+  void LCD_set_backlight(bool val);
 #endif

@@ -37,5 +37,9 @@ int main(void) {
   x_twi_init();
   
   x_new(1, flash, true);
-  x_new(0, USART_echo, true);
+  // x_new(2, USART_echo, true);
+  x_new(0, LCD, true);
+  while(1) {
+    x_yield();
+  }
 }

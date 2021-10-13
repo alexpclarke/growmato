@@ -49,3 +49,7 @@ bool b_putc(uint8_t b_id, uint8_t val) {
   // Successfully put a character on the stack.
   return true;
 }
+
+bool b_isEmpty(uint8_t b_id) {
+  return (BN_AVAILABLE(b_id) == 0);
+}

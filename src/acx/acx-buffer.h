@@ -25,5 +25,6 @@
   void b_init(uint8_t b_id);
   bool b_putc(uint8_t b_id, uint8_t val);
   bool b_getc(uint8_t b_id, uint8_t* valPtr);
+  bool b_isEmpty(uint8_t b_id);
 #endif
 
