@@ -44,6 +44,7 @@
 ## Adafruit SHT30 Temperature and Humidity Sensor (I2C)
     https://www.adafruit.com/product/5064
     https://www.mouser.com/datasheet/2/682/Sensirion_Humidity_Sensors_SHT3x_Datasheet_digital-971521.pdf
+    https://electropeak.com/learn/interfacing-sht30-temperature-humidity-sensor-with-arduino/
 
 ## Adafruit encased temp & humidity (I2C):
     https://www.adafruit.com/product/1293
