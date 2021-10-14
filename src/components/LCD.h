@@ -88,12 +88,9 @@
   uint8_t LCD_waitbusy(void);
   void LCD_gotoxy(uint8_t x, uint8_t y);
   int LCD_getxy(void);
-  void LCD_clrscr(void);
-  void LCD_led(uint8_t onoff);
-  void LCD_home(void);
   void LCD_putc(char c);
   void LCD_puts(const char* s);
-
+  void LCD_set_backlight(bool val);
 
   uint8_t LCD_create_custom_char(uint8_t charnum, const uint8_t * values);
   void LCD_clear_CGRAM();

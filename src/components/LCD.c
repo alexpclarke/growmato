@@ -1,16 +1,15 @@
 #include "LCD.h"
 
-static inline void _delayFourCycles(unsigned int __count)
-{
-    if ( __count == 0 )    
-        __asm__ __volatile__( "rjmp 1f\n 1:" );    // 2 cycles
-    else
-        __asm__ __volatile__ (
-    	    "1: sbiw %0,1" "\n\t"                  
-    	    "brne 1b"                              // 4 cycles/loop
-    	    : "=w" (__count)
-    	    : "0" (__count)
-    	   );
+static inline void _delayFourCycles(unsigned int __count) {
+  if ( __count == 0 )    
+  __asm__ __volatile__( "rjmp 1f\n 1:" );    // 2 cycles
+  else
+  __asm__ __volatile__ (
+  "1: sbiw %0,1" "\n\t"                  
+  "brne 1b"                              // 4 cycles/loop
+  : "=w" (__count)
+  : "0" (__count)
+  );
 }
 #define delay_usec(us)  _delayFourCycles( ( ( 1*(F_CPU/4000) )*us)/1000 )
 #define lcd_e_delay() __asm__ __volatile__( "rjmp 1f\n 1:" );
@@ -72,7 +71,7 @@ void LCD_init(uint8_t cols, uint8_t lines) {
   LCD_command(LCD_FUNCTION_4BIT_2LINES);      /* function set: display lines  */
 
   LCD_command(LCD_DISP_OFF);              /* display off                  */
-  LCD_clrscr();                           /* display clear                */
+  LCD_command(LCD_CLEARDISPLAY);                           /* display clear                */
   LCD_command(LCD_MODE_DEFAULT);          /* set entry mode               */
   LCD_command(LCD_DISP_ON_CURSOR);                  /* display/cursor control       */
 }
@@ -92,20 +91,14 @@ uint8_t LCD_waitbusy(void) {
 
 void LCD_command(uint8_t cmd) {
   LCD_waitbusy();
-  LCD_write(cmd, 0);
+  // LCD_write(cmd, 0);
 }
 
-
-
-void LCD_set_backlight(bool val) {
-  LCD_backlight = val;
-  uint8_t command = LCD_CLEARDISPLAY;
-  if (LCD_backlight) {
-    command &= 0x08;
+void LCD_set_backlight(bool on) {
+  if (on) {
+    dataport &= ~_BV(LCD_LED_PIN);
+  } else {
+    dataport |= _BV(LCD_LED_PIN);
   }
-  // x_twi_transmit(LCD_ADDRESS, &command, 1, true);
-}
-
-void LCD_write() {
-  
+  pcf8574_setoutput(dataport);
 }

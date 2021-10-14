@@ -2,14 +2,12 @@
 #include "acx-usart.h"
 
 static volatile uint8_t twi_mode;
-static volatile uint8_t twi_rep_start; 
-// static volatile uint8_t twi_send_stop;
+static volatile uint8_t twi_send_stop;
 
 void x_twi_init() {
   // initialize state
   twi_mode = TWI_READY;
-  // twi_sendStop = true;
-  twi_rep_start = false;
+  twi_send_stop = true;
 
   // activate internal pullups for the SDA and SCL pins.
   DDRC |= _BV(DDC4) | _BV(DDC5);
@@ -100,21 +98,25 @@ bool x_twi_putc(uint8_t address, uint8_t data, bool sendStop) {
   while (twi_mode != TWI_READY) x_yield();
 
   // Set repstart mode.
-  twi_rep_start = !sendStop;
+  twi_send_stop = sendStop;
 
   // Initialize the buffer.
   b_init(TWI_TX_BUFFER);
 
   // Put the address into the stack.
-  // uint8_t temp_addr = 0b10000000;
-  uint8_t temp_addr = ((address << 1) & 0xFE);
+  uint8_t temp_addr = ((address << 1) & 0b11111110);
   b_putc(TWI_TX_BUFFER, temp_addr);
 
   // Copy the data to the buffer.
   b_putc(TWI_TX_BUFFER, data);
 
   if (twi_mode == TWI_REPSTART) {
-    // TODO
+    uint8_t val;
+    if (b_getc(TWI_TX_BUFFER, &val)) {
+      x_twi_write(val);
+    } else {
+      return false;
+    }
   } else {
     // Become master.
     twi_mode = TWI_INIT;
@@ -134,14 +136,14 @@ bool x_twi_puts(uint8_t address, uint8_t* data, uint8_t length, bool sendStop) {
   while (twi_mode != TWI_READY) x_yield();
 
   // Set repstart mode.
-  twi_rep_start = !sendStop;
+  twi_send_stop = sendStop;
 
   // Initialize the buffer.
   b_init(TWI_TX_BUFFER);
 
   // Put the address into the stack.
   // uint8_t temp_addr = 0b10000000;
-  uint8_t temp_addr = ((address << 1) & 0xFE);
+  uint8_t temp_addr = ((address << 1) & 0b11111110);
   b_putc(TWI_TX_BUFFER, temp_addr);
 
   // Copy the data to the buffer.
@@ -150,7 +152,51 @@ bool x_twi_puts(uint8_t address, uint8_t* data, uint8_t length, bool sendStop) {
   }
 
   if (twi_mode == TWI_REPSTART) {
-    // TODO
+    uint8_t val;
+    if (b_getc(TWI_TX_BUFFER, &val)) {
+      x_twi_write(val);
+    } else {
+      return false;
+    }
+  } else {
+    // Become master.
+    twi_mode = TWI_INIT;
+
+    // Send start condition.
+    x_twi_start();
+  }
+
+  return true;
+}
+
+
+bool x_twi_gets(uint8_t address, uint8_t* dest, uint8_t maxLength, bool sendStop) {
+  // Check if number of bytes to read can fit in the RXbuffer.
+  if (maxLength >= B_SIZE) return false;
+
+  // Reset RX buffer.
+  b_init(TWI_RX_BUFFER);
+
+  // Wait untill TWI is ready
+  while (twi_mode != TWI_READY) x_yield();
+
+  // Set repstart mode.
+  twi_send_stop = sendStop;
+
+  // Initialize the TX buffer.
+  b_init(TWI_TX_BUFFER);
+
+  // Put the address into the stack.
+  uint8_t temp_addr = ((address << 1) | 0b00000001);
+  b_putc(TWI_TX_BUFFER, temp_addr);
+  
+  if (twi_mode == TWI_REPSTART) {
+    uint8_t val;
+    if (b_getc(TWI_TX_BUFFER, &val)) {
+      x_twi_write(val);
+    } else {
+      return false;
+    }
   } else {
     // Become master.
     twi_mode = TWI_INIT;
@@ -164,16 +210,16 @@ bool x_twi_puts(uint8_t address, uint8_t* data, uint8_t length, bool sendStop) {
 
 ISR (TWI_vect) {
   switch (TWS) {
-    case TWS_MT_SLA_ACK:
+    case TWS_MT_SLA_ACK: {
       twi_mode = TWI_MTX;
+    }
     case TWS_START:
-    case TWS_MT_DATA_ACK:
-      ;
+    case TWS_MT_DATA_ACK: {
       uint8_t val;
       if (b_getc(TWI_TX_BUFFER, &val)) {
         // If there is more data to send, send it.
         x_twi_write(val);
-      } else if (twi_rep_start) {
+      } else if (!twi_send_stop) {
         // If in a repeated start, send start.
         x_twi_start();
       } else {
@@ -181,14 +227,62 @@ ISR (TWI_vect) {
         twi_mode = TWI_READY;
         x_twi_stop();
       }
-
       break;
+    }
 
-    case TWS_MT_SLA_NACK:
-    case TWS_MT_ARB_LOST:
-    default:
+    case TWS_REP_START: {
+      // Switch to Repeat Start mode.
+      twi_mode = TWI_REPSTART;
+      break;
+    }
+
+
+
+    case TWS_MR_SLA_ACK: {
+      // Switch to Master Receiver mode.
+      twi_mode = TWI_MRX;
+
+      if (b_get_available(TWI_RX_BUFFER) > 1) {
+        // If there is more than one byte, receive data and return an ACK.
+        x_twi_ack();
+      } else if (!twi_send_stop) {
+        // Otherwise when a data byte is received, return NACK.
+        x_twi_nack();
+      }
+      break;
+    }
+
+    case TWS_MR_DATA_ACK: {
+      // Push the recieved byte to the rx buffer.
+      b_putc(TWI_RX_BUFFER, TWDR);
+
+      if (b_get_available(TWI_RX_BUFFER) > 1) {
+        // If there is more than one byte, receive data and return an ACK.
+        x_twi_ack();
+      } else if (!twi_send_stop) {
+        // Otherwise when a data byte is received, return NACK.
+        x_twi_nack();
+      }
+      break;
+    }
+      
+    case TWS_MR_DATA_NACK: {
+      // Push the recieved byte to the rx buffer.
+      b_putc(TWI_RX_BUFFER, TWDR);
+
+      if (!twi_send_stop) {
+        x_twi_start();
+      } else {
+        twi_mode = TWI_READY;
+        x_twi_stop();
+      }
+      break;
+    }
+
+    default: {
       x_usart_putc('x');
       x_twi_disable();
       break;
+    }
   }
 }
