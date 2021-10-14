@@ -18,6 +18,7 @@
 1. [Programming AVR I2C interface](https://embedds.com/programming-avr-i2c-interface/)
 2. [Accessing an I2C LCD Display using the AVR 2-wire Serial Interface](https://www.microchip.com/content/dam/mchp/documents/OTH/ApplicationNotes/ApplicationNotes/doc1981.pdf)
 3. [Interrupt Driven TWI Interface for AVR](http://www.chrisherring.net/all/tutorial-interrupt-driven-twi-interface-for-avr-part1/)
+4. [AVR155: Accessing an I2C LCD Display using the AVR® 2-wire Serial Interface](https://www.microchip.com/content/dam/mchp/documents/OTH/ApplicationNotes/ApplicationNotes/doc1981.pdf)
 
 ### Associated values
 

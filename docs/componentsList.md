@@ -1,20 +1,66 @@
-# Soil Moisture Sensor:
+# Components List
 
-## Specifications:
-### Power Options: 
-    Off/On
-### Data type: 
-    int mositureLevel
-    bool power
-### Address: 
-    0x36 (STEMMA)
+## 1. LCD Display
 
+Purchase Link: [Amazon](https://www.amazon.com/SunFounder-Serial-Module-Arduino-Mega2560/dp/B01GPUMP9C/ref=sr_1_5?dchild=1&keywords=i2c+lcd&qid=1631548048&sr=8-5)
 
-## Adafruit STEMMA (I2C):
-    https://learn.adafruit.com/introducing-adafruit-stemma-qt/technical-specs
-    https://cdn-learn.adafruit.com/downloads/pdf/adafruit-stemma-soil-sensor-i2c-capacitive-moisture-sensor.pdf?timestamp=1634069203
+### Associated Values
 
-## SparkFun Qwiic (I2C):
+```c
+volatile uint8_t pcf8574_pinstatus;
+bool LCD_backlight;
+bool LCD_inverted;
+uint8_t LCD_displayfunction
+```
+
+### Connections
+
+GND - GND
+VCC - 5V
+SDA - SDA
+SCL - SCL
+
+### LCD Controller
+
+Model: HD44780U
+Datasheet: [SparkFun](https://www.sparkfun.com/datasheets/LCD/HD44780.pdf)
+Supply Voltage: 2.7V - 5.5V (5V typical)
+Max Frequency: 2MHz
+
+### I2C Driver
+
+Model: PCF8574T
+Datasheet: [NXP](https://www.nxp.com/docs/en/data-sheet/PCF8574_PCF8574A.pdf)
+Default Address: 0x3F
+Max Frequency: 100 kHz
+
+## 2. Soil Moisture Sensor
+
+Purchase Link: [Adafruit](https://www.adafruit.com/product/4026)
+Datasheet: [Adafruit](https://cdn-learn.adafruit.com/downloads/pdf/adafruit-stemma-soil-sensor-i2c-capacitive-moisture-sensor.pdf?timestamp=1634069203)
+Default Address: 0x36
+
+### Associated Values
+
+```c
+bool power;
+uint8_t moisture;
+```
+
+### Connections
+
+GND - GND
+VCC - 5V
+SDA - SDA
+SCL - SCL
+
+### Controller
+
+Model: ATSAMD10D14A
+Datasheet: [Microchip](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-42242-SAM-D10_Datasheet.pdf)
+Supply Voltage: 1.62V – 3.63V
+
+### SparkFun Qwiic (I2C):
     https://www.sparkfun.com/products/17731
     http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2586-AVR-8-bit-Microcontroller-ATtiny25-ATtiny45-ATtiny85_Datasheet.pdf
     https://www.sparkfun.com/qwiic
@@ -61,32 +107,6 @@
 
 
 
-## LCD Display
-
-Purchase Link: [Amazon](https://www.amazon.com/SunFounder-Serial-Module-Arduino-Mega2560/dp/B01GPUMP9C/ref=sr_1_5?dchild=1&keywords=i2c+lcd&qid=1631548048&sr=8-5)
-
-### Associated Values
-```c
-bool backlight_on;
-bool screen_inverted;
-```
-
-### Connections
-GND - GND
-VCC - 5V
-SDA - SDA
-SCL - SCL
-
-### LCD Controller
-Model: HD44780U
-Datasheet: https://www.sparkfun.com/datasheets/LCD/HD44780.pdf
-Supply Voltage: 2.7V - 5.5V (5V typical)
-Max Frequency: 2MHz
-
-### I2C Driver
-Model: PCF8574T
-Datasheet: https://www.nxp.com/docs/en/data-sheet/PCF8574_PCF8574A.pdf
-Default Address: 0x3F
 
 
 # Parts for watering solution:

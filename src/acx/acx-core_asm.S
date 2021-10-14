@@ -1,6 +1,3 @@
-; Authors:  Alex Clarke
-; Date:     2021-09-10
-
 #define __SFR_OFFSET 0
 #include <avr/io.h>
 #include "acx-core.h"
@@ -148,3 +145,25 @@ restore:
     POP r2
 
     RET
+
+
+//-------------------------------------------------------------------------------------------
+// delay_usec - EFB solution
+// Assumes 16MHz operation to give microsecond per count delay
+// This delay supports a delay up to 65536 (0 input parameter gives max delay)
+// takes into account the 2 cycles required to load the (constant) parameter before
+// the call. (If parameter is a variable it may take more cycles.) 
+// This means that the delay should be accurate to within the cycle time of the processor 
+// (with a 2 cycle parameter load time).
+//-------------------------------------------------------------------------------------------
+
+//  Need 5 + (n-1)*16 cycles
+    .global x_delay_usec
+x_delay_usec:
+    sbiw r24, 1         ; 2 cycles
+    breq 2f             ; 2 if taken, 1 otherwise
+    rcall 3f            ; 9 cycles for call/ret
+    rjmp 1f             ; burn 2 cycles
+1:  rjmp x_delay_usec   ; 2 cycles
+2:  nop
+3:  ret
