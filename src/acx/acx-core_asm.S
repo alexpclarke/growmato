@@ -159,11 +159,11 @@ restore:
 
 //  Need 5 + (n-1)*16 cycles
     .global x_delay_usec
-delay_usec:
-    sbiw r24, 1     ; 2 cycles
-    breq 2f         ; 2 if taken, 1 otherwise
-    rcall 3f        ; 9 cycles for call/ret
-    rjmp 1f         ; burn 2 cycles
-1:  rjmp delay_usec ; 2 cycles
+x_delay_usec:
+    sbiw r24, 1         ; 2 cycles
+    breq 2f             ; 2 if taken, 1 otherwise
+    rcall 3f            ; 9 cycles for call/ret
+    rjmp 1f             ; burn 2 cycles
+1:  rjmp x_delay_usec   ; 2 cycles
 2:  nop
 3:  ret

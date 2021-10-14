@@ -1,12 +1,18 @@
-#include "PCF8574.h"
+#include "pcf8574.h"
+
+/* ----- GLOBAL VARIABLES ----- */
 
 //pin status
 volatile uint8_t pcf8574_pinstatus;
 
+/* ----- PCF8574 FUNCTIONS ----- */
+
+// Reset the pcf8574 status.
 void pcf8574_init() {
-  pcf8574_pinstatus = 0;
+  pcf8574_pinstatus = 0b00000000;
 }
 
+// Get the status.
 uint8_t pcf8574_getoutput() {
   return pcf8574_pinstatus;
 }
@@ -19,7 +25,7 @@ bool pcf8574_setoutput(uint8_t data) {
   return x_twi_putc(PCF8574_ADDRESS, data, true);
 }
 
-bool pcf8574_setoutputpin(uint8_t deviceid, uint8_t pin, bool data) {
+bool pcf8574_setoutputpin(uint8_t pin, bool data) {
   // Ensure the pin valid.
   if (pin >= PCF8574_MAXPINS) return false;
 
@@ -34,15 +40,10 @@ bool pcf8574_setoutputpin(uint8_t deviceid, uint8_t pin, bool data) {
   return x_twi_putc(PCF8574_ADDRESS, pcf8574_pinstatus, true);
 }
 
-uint8_t pcf8574_getinput() {
-  uint8_t val;
-  if (x_twi_recieve(PCF8574_ADDRESS, &val)) {
-    return val;
-  } else {
-    return 0x00;
-  }
+bool pcf8574_getinput(uint8_t* dest) {
+  return x_twi_recieve(PCF8574_ADDRESS, dest);
 }
 
-bool pcf8574_getinputpin() {
-  return x_twi_recieve(PCF8574_ADDRESS);
+bool pcf8574_getinputpin(bool* dest) {
+  return x_twi_recieve(PCF8574_ADDRESS, dest);
 }

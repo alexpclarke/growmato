@@ -7,6 +7,7 @@ Purchase Link: [Amazon](https://www.amazon.com/SunFounder-Serial-Module-Arduino-
 ### Associated Values
 
 ```c
+volatile uint8_t pcf8574_pinstatus;
 bool LCD_backlight;
 bool LCD_inverted;
 uint8_t LCD_displayfunction
