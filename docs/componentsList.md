@@ -31,6 +31,7 @@ Max Frequency: 2MHz
 Model: PCF8574T
 Datasheet: [NXP](https://www.nxp.com/docs/en/data-sheet/PCF8574_PCF8574A.pdf)
 Default Address: 0x3F
+Max Frequency: 100 kHz
 
 ## 2. Soil Moisture Sensor
 

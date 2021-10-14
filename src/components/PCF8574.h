@@ -6,8 +6,7 @@
 
   #define PCF8574_ADDRESS (0x27) //device base address
 
-  //pin status
-  volatile uint8_t pcf8574_pinstatus;
+  #define PCF8574_MAXPINS 8       // Max number of pins
 
   void pcf8574_init(void);
 

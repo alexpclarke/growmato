@@ -95,7 +95,38 @@ void x_twi_nack() {
   TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWIE);
 }
 
-bool x_twi_transmit(uint8_t address, uint8_t* data, uint8_t length, bool sendStop) {
+bool x_twi_putc(uint8_t address, uint8_t data, bool sendStop) {
+  // Wait untill TWI is ready
+  while (twi_mode != TWI_READY) x_yield();
+
+  // Set repstart mode.
+  twi_rep_start = !sendStop;
+
+  // Initialize the buffer.
+  b_init(TWI_TX_BUFFER);
+
+  // Put the address into the stack.
+  // uint8_t temp_addr = 0b10000000;
+  uint8_t temp_addr = ((address << 1) & 0xFE);
+  b_putc(TWI_TX_BUFFER, temp_addr);
+
+  // Copy the data to the buffer.
+  b_putc(TWI_TX_BUFFER, data);
+
+  if (twi_mode == TWI_REPSTART) {
+    // TODO
+  } else {
+    // Become master.
+    twi_mode = TWI_INIT;
+
+    // Send start condition.
+    x_twi_start();
+  }
+
+  return true;
+}
+
+bool x_twi_puts(uint8_t address, uint8_t* data, uint8_t length, bool sendStop) {
   // Ensure the buffer is large enough.
   if (length > B_SIZE) return false;
 

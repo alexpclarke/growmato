@@ -68,5 +68,7 @@
   void x_twi_write(uint8_t u8data);
   void x_twi_ack(void);
   void x_twi_nack(void);
-  bool x_twi_transmit(uint8_t address, uint8_t* data, uint8_t length, bool sendStop);
+  bool x_twi_putc(uint8_t address, uint8_t data, bool sensStop);
+  bool x_twi_puts(uint8_t address, uint8_t* data, uint8_t length, bool sendStop);
+  bool x_twi_getc(uint8_t address, uint8_t* dest);
 #endif

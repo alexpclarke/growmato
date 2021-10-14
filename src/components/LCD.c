@@ -39,7 +39,7 @@ void LCD_set_backlight(bool val) {
   if (LCD_backlight) {
     command &= 0x08;
   }
-  x_twi_transmit(LCD_ADDRESS, &command, 1, true);
+  // x_twi_transmit(LCD_ADDRESS, &command, 1, true);
 }
 
 void LCD_write() {
