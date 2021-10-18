@@ -13,7 +13,6 @@
   bool pcf8574_setoutput(uint8_t data);
   uint8_t pcf8574_getoutputpin(uint8_t pin);
   bool pcf8574_setoutputpin(uint8_t pin, bool data);
-
   bool pcf8574_getinput(uint8_t* dest);
   bool pcf8574_getinputpin(bool* dest);
 #endif

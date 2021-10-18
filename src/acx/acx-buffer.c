@@ -1,5 +1,6 @@
 #include "acx-buffer.h"
 
+// Initializes a buffer.
 void b_init(uint8_t b_id) {
   BN_IN(b_id) = 0;
   BN_OUT(b_id) = 0;
@@ -50,10 +51,12 @@ bool b_putc(uint8_t b_id, uint8_t val) {
   return true;
 }
 
+// Returns whether the buffer is empty.
 bool b_isEmpty(uint8_t b_id) {
   return (BN_AVAILABLE(b_id) == 0);
 }
 
+// Returns the number of values availale in the buffer.
 uint8_t b_get_available(uint8_t b_id) {
   return BN_AVAILABLE(b_id);
 }

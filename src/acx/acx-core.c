@@ -1,7 +1,5 @@
 #include "acx-core.h"
 
-/* ----- ACX Functions ----- */
-
 // Initializes the ACX kernel.
 void x_init(void) {
   // Clear interupts so the init doesnt get interupted.
@@ -37,6 +35,31 @@ void x_init(void) {
   sei();
 
   // Return to caller (now thread 0).
+  return;
+}
+
+// Set up the system counter on Timer0 in CTC mode that produces an interupt at
+// a 1mHz resolution.
+void x_init_system_timer(void) {
+  // Clear registers.
+  TCCR0A = 0x00;
+  TCCR0B = 0x00;
+  TCNT0 = 0x00;
+
+  // Set mode to CTC.
+  TCCR0A |= (0b00000001 << WGM01);
+
+  // Set OCR0A to a 1msec tick.
+  // OCR0A = (uint8_t)((CLOCK_HZ / 64) / 1000);
+  OCR0A = 250;
+
+  // Enable OCIE0A, turning on the interupt.
+  TIMSK0 |= (0b00000001 << OCIE0A);
+
+  // Set prescalar to 64.
+  TCCR0B |= (0b00000011 << CS00);
+
+  // Finished setting up the system timer.
   return;
 }
 
@@ -104,8 +127,6 @@ void x_enable(uint8_t tid) {
   return;
 }
 
-/* -----  Inerupt Service Routines ----- */
-
 // This interrupt is triggered every 1 msec based on TIMER0 COMPARE MATCH.
 ISR(TIMER0_COMPA_vect) {
   // For each delayed thread, decrement its counter and if the counter is at
@@ -120,32 +141,5 @@ ISR(TIMER0_COMPA_vect) {
   }
 
   // Done with ISR, continue whatever the system was doing before the interupt.
-  return;
-}
-
-/* ----- Helper Functions ----- */
-
-// Set up the system counter on Timer0 in CTC mode that produces an interupt at
-// a 1mHz resolution.
-void x_init_system_timer(void) {
-  // Clear registers.
-  TCCR0A = 0x00;
-  TCCR0B = 0x00;
-  TCNT0 = 0x00;
-
-  // Set mode to CTC.
-  TCCR0A |= (0b00000001 << WGM01);
-
-  // Set OCR0A to a 1msec tick.
-  // OCR0A = (uint8_t)((CLOCK_HZ / 64) / 1000);
-  OCR0A = 250;
-
-  // Enable OCIE0A, turning on the interupt.
-  TIMSK0 |= (0b00000001 << OCIE0A);
-
-  // Set prescalar to 64.
-  TCCR0B |= (0b00000011 << CS00);
-
-  // Finished setting up the system timer.
   return;
 }

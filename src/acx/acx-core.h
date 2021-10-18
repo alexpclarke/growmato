@@ -45,7 +45,7 @@
     void x_yield(void);
     void x_schedule(void);
     void x_delay(uint16_t);
-    void x_delay_usec(uint8t);
+    void x_delay_usec(uint8_t);
     void x_disable(uint8_t);
     void x_enable(uint8_t);
   #endif

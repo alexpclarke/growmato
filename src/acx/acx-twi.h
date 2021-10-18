@@ -13,7 +13,8 @@
   #define TWI_FREQUENCY   10000L
   #define TWS             (TWSR & 0xF8)
 
-  // TWI states.
+  /* ----- TWI STATES ----- */
+  
   #define TWI_READY     0
   #define TWI_INIT      1
   #define TWI_REPSTART  2
@@ -68,8 +69,8 @@
   void x_twi_write(uint8_t u8data);
   void x_twi_ack(void);
   void x_twi_nack(void);
-  bool x_twi_putc(uint8_t address, uint8_t data, bool sensStop);
-  bool x_twi_puts(uint8_t address, uint8_t* data, uint8_t length, bool sendStop);
-  bool x_twi_getc(uint8_t address, uint8_t* dest);
-  bool x_twi_gets(uint8_t address, uint8_t* dest, uint8_t maxLength, bool sendStop);
+  bool x_twi_putc(uint8_t address, uint8_t data, bool send_stop);
+  bool x_twi_puts(uint8_t address, uint8_t* data, uint8_t length, bool send_stop);
+  bool x_twi_getc(uint8_t address, uint8_t* dest, bool send_stop);
+  bool x_twi_gets(uint8_t address, uint8_t* dest, uint8_t maxLength, bool send_stop);
 #endif

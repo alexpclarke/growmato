@@ -32,13 +32,22 @@ void USART_echo() {
 }
 
 void LCD() {
-  LCD_init(20, 4);
+  LCD_init();
+  LCD_set_backlight(true);
 
-  bool backlight = true;
+  // LCD_write_command(LCD_CURSORSHIFT);
+
+  // LCD_gotoxy(3, 3);
+  // LCD_putc('c');
+
+  // LCD_gotoxy(2, 4);
+
+  // bool backlight = true;
 
   while (1) {
-    LCD_set_backlight(!backlight);
-    x_delay(4000);
+    // LCD_set_backlight(backlight);
+    // backlight = !backlight;
+    x_delay(2000);
   }
 }
 
@@ -50,7 +59,9 @@ int main(void) {
   x_new(1, flash, true);
   // x_new(2, USART_echo, true);
   x_new(0, LCD, true);
-  while(1) {
-    x_yield();
-  }
+
+
+  // while(1) {
+  //   x_yield();
+  // }
 }

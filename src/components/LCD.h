@@ -7,7 +7,8 @@
 
   #define LCD_ADDRESS 0x27
 
-  #define LCD_CLEARDISPLAY    0x01
+  // LCD commands.
+  #define LCD_CLEARDISPLAY    0x01  // Clears entire display and sets DDRAM address 0 in address counter.
   #define LCD_RETURNHOME      0x02
   #define LCD_ENTRYMODESET    0x04
   #define LCD_DISPLAYCONTROL  0x08
@@ -16,27 +17,46 @@
   #define LCD_SETCGRAMADDR    0x40
   #define LCD_SETDDRAMADDR    0x80
 
-  // flags for function set
-  #define LCD_8BITMODE 0x10
-  #define LCD_4BITMODE 0x00
-  #define LCD_2LINE 0x08
-  #define LCD_1LINE 0x00
-  #define LCD_5x10DOTS 0x04
-  #define LCD_5x8DOTS 0x00
+  // Flags for display control.
+  #define LCD_DC_BLINKON    0x01
+  #define LCD_DC_BLINKOFF   0x00
+  #define LCD_DC_CURSORON   0x02
+  #define LCD_DC_CURSOROFF  0x00
+  #define LCD_DC_DISPLAYON  0x04
+  #define LCD_DC_DISPLAYOFF 0x00
 
-  #define LCD_DATA0_PIN    4            /**< pin for 4bit data bit 0  */
-  #define LCD_DATA1_PIN    5            /**< pin for 4bit data bit 1  */
-  #define LCD_DATA2_PIN    6            /**< pin for 4bit data bit 2  */
-  #define LCD_DATA3_PIN    7            /**< pin for 4bit data bit 3  */
-  #define LCD_RS_PIN       0            /**< pin  for RS line         */
-  #define LCD_RW_PIN       1            /**< pin  for RW line         */
-  #define LCD_E_PIN        2            /**< pin  for Enable line     */
-  #define LCD_LED_PIN      3            /**< pin  for Led             */
+  // Flags for function set.
+  #define LCD_FS_5x8DOTS  0x00
+  #define LCD_FS_5x10DOTS 0x04
+  #define LCD_FS_1LINE    0x00
+  #define LCD_FS_2LINE    0x08
+  #define LCD_FS_4BITMODE 0x00
+  #define LCD_FS_8BITMODE 0x10
 
-  #define LCD_FUNCTION_4BIT_1LINE  0x20   /* 4-bit interface, single line, 5x7 dots */
-  #define LCD_FUNCTION_4BIT_2LINES 0x28   /* 4-bit interface, dual line,   5x7 dots */
-  #define LCD_FUNCTION_8BIT_1LINE  0x30   /* 8-bit interface, single line, 5x7 dots */
-  #define LCD_FUNCTION_8BIT_2LINES 0x38   /* 8-bit interface, dual line,   5x7 dots */
+
+  //Flags for Entry Mode.
+  #define LCD_EM_SHIFT    0x01
+  #define LCD_EM_NOSHIFT  0x00
+  #define LCD_EM_INC      0x02
+  #define LCD_EM_DEC      0x00
+
+  // Dataport bits.
+  #define LCD_DP_RS   0x01
+  #define LCD_DP_RW   0x02
+  #define LCD_DP_E    0x04
+  #define LCD_DP_LED  0x08
+  #define LCD_DP_D0   0x10
+  #define LCD_DP_D1   0x20
+  #define LCD_DP_D2   0x40
+  #define LCD_DP_D3   0x80
+  
+
+
+
+
+
+
+
 
   /* display on/off, cursor on/off, blinking char at cursor position */
   #define LCD_DISP_OFF             0x08   /* display off                            */
@@ -67,19 +87,25 @@
   #define LCD_BUSY              7      /* DB7: LCD is busy                    */
 
   /* set entry mode: display shift on/off, dec/inc cursor move direction */
-  #define LCD_ENTRY_DEC            0x04   /* display shift off, dec cursor move dir */
-  #define LCD_ENTRY_DEC_SHIFT      0x05   /* display shift on,  dec cursor move dir */
-  #define LCD_ENTRY_INC_           0x06   /* display shift off, inc cursor move dir */
-  #define LCD_ENTRY_INC_SHIFT      0x07   /* display shift on,  inc cursor move dir */
+  #define LCD_ENTRY_DEC            0x04 0b100  /* display shift off, dec cursor move dir */
+  #define LCD_ENTRY_DEC_SHIFT      0x05 0b101  /* display shift on,  dec cursor move dir */
+  #define LCD_ENTRY_INC_           0x06 0b110  /* display shift off, inc cursor move dir */
+  #define LCD_ENTRY_INC_SHIFT      0x07 0b111  /* display shift on,  inc cursor move dir */
 
   #define LCD_MODE_DEFAULT     ((1<<LCD_ENTRY_MODE) | (1<<LCD_ENTRY_INC) )
 
-  // flags foor backlight
-  #define LCD_BACKLIGHT 0x08
-  #define LCD_NOBACKLIGHT 0x00  
+  #define LCD_LINES           4     /**< number of visible lines of the display */
+  #define LCD_DISP_LENGTH    20     /**< visibles characters per line of the display */
+  #define LCD_LINE_LENGTH  0x40     /**< internal line length of the display    */
+  #define LCD_START_LINE1  0x00     /**< DDRAM address of first char of line 1 */
+  #define LCD_START_LINE2  0x40     /**< DDRAM address of first char of line 2 */
+  #define LCD_START_LINE3  0x14     /**< DDRAM address of first char of line 3 */
+  #define LCD_START_LINE4  0x54     /**< DDRAM address of first char of line 4 */
+  #define LCD_WRAP_LINES      1     /**< 0: no wrap, 1: wrap at end of visibile line */
 
-  void LCD(void);
-  void LCD_init(uint8_t cols, uint8_t lines);
+
+
+  void LCD_init();
   void LCD_e_toggle(void);
   void LCD_write(uint8_t data, uint8_t rs);
   void LCD_write_command(uint8_t cmd);

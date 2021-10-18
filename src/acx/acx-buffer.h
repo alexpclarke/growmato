@@ -1,4 +1,3 @@
-/* ----- Includes ----- */
 #include <util/atomic.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -6,6 +5,9 @@
 
 #ifndef ACX_QUEUE_H_
   #define ACX_QUEUE_H_
+
+  // Number of queues.
+  #define B_MAX 4
 
   // Buffer assignment.
   #define USART_RX_BUFFER 0
@@ -15,7 +17,8 @@
 
   // The size of each serial buffer.
   #define B_SIZE 0x40
-  #define B_MAX 4
+
+  // Macros for accessing buffers.
   #define B_START (T_START - (B_MAX * B_SIZE))
   #define BN_IN(n) _SFR_MEM8(B_START + (B_SIZE * n))
   #define BN_OUT(n) _SFR_MEM8(B_START + (B_SIZE * n) + 1)
