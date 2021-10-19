@@ -40,15 +40,15 @@
   #define LCD_EM_INC      0x02
   #define LCD_EM_DEC      0x00
 
-  // Dataport bits.
-  #define LCD_DP_RS   0x01
-  #define LCD_DP_RW   0x02
-  #define LCD_DP_E    0x04
+  // Dataport pin function.
+  #define LCD_DP_RS   0x01  // Register select.
+  #define LCD_DP_RW   0x02  // Read or write.
+  #define LCD_DP_E    0x04  // Starts data read/write.
   #define LCD_DP_LED  0x08
-  #define LCD_DP_D0   0x10
-  #define LCD_DP_D1   0x20
-  #define LCD_DP_D2   0x40
-  #define LCD_DP_D3   0x80
+  #define LCD_DP_DB0  0x10
+  #define LCD_DP_DB1  0x20
+  #define LCD_DP_DB2  0x40
+  #define LCD_DP_DB3  0x80
   
 
 
@@ -110,7 +110,7 @@
   void LCD_write(uint8_t data, uint8_t rs);
   void LCD_write_command(uint8_t cmd);
   void LCD_write_data(uint8_t data);
-  uint8_t LCD_read(uint8_t rs);
+  bool LCD_read(uint8_t* dest, uint8_t rs);
   uint8_t LCD_waitbusy(void);
   void LCD_gotoxy(uint8_t x, uint8_t y);
   int LCD_getxy(void);

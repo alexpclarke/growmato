@@ -32,8 +32,11 @@ void USART_echo() {
 }
 
 void LCD() {
+  DDRB |= _BV(DDB0) | _BV(DDB1) | _BV(DDB2);
+
   LCD_init();
   LCD_set_backlight(true);
+  LCD_gotoxy(3, 3);
 
   // LCD_write_command(LCD_CURSORSHIFT);
 
@@ -45,6 +48,7 @@ void LCD() {
   // bool backlight = true;
 
   while (1) {
+    // LCD_putc('x');
     // LCD_set_backlight(backlight);
     // backlight = !backlight;
     x_delay(2000);
