@@ -44,7 +44,3 @@ bool pcf8574_setoutputpin(uint8_t pin, bool data) {
 bool pcf8574_getinput(uint8_t* dest) {
   return x_twi_getc(PCF8574_ADDRESS, dest, true);
 }
-
-bool pcf8574_getinputpin(bool* dest) {
-  return x_twi_getc(PCF8574_ADDRESS, dest, true);
-}

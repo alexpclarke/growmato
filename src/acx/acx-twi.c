@@ -26,11 +26,6 @@ void x_twi_set_frequency(uint32_t freq, uint8_t prescalar) {
   TWBR = ((CLOCK_HZ / freq) - 16) / 2;
 }
 
-// Set device's slave address.
-void x_twi_setAddress(uint8_t address) {
-  TWAR = address << 1;
-}
-
 bool x_twi_is_ready() {
   return (twi_state == TWI_READY || twi_state == TWI_REPSTART);
 }
@@ -112,9 +107,7 @@ bool x_twi_putc(uint8_t address, uint8_t data, bool sendStop) {
   b_putc(TWI_TX_BUFFER, temp_addr);
 
   // Copy the data to the buffer.
-  b_putc(TWI_TX_BUFFER, data);
-
-  
+  b_putc(TWI_TX_BUFFER, data);  
 
   if (twi_state == TWI_REPSTART) {
     uint8_t val;

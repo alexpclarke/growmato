@@ -65,13 +65,13 @@
   #define LCD_AC_MASK 0b01111111
   #define LCD_BF      7
 
-  // Dont touch these.
+  // Private prototypes.
   void LCD_e_toggle(void);
   bool LCD_read(uint8_t* dest, uint8_t rs);
   void LCD_waitbusy(void);
   void LCD_write(uint8_t data, uint8_t rs);
 
-  // Use these.
+  // Public prototypes.
   void LCD_init(void);
   void LCD_get_pos(uint8_t* x, uint8_t* y);
   void LCD_set_backlight(bool val);

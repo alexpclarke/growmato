@@ -6,6 +6,8 @@
 #ifndef ACX_QUEUE_H_
   #define ACX_QUEUE_H_
 
+  /* ----- GENERAL INFO ----- */
+
   // Number of queues.
   #define B_MAX 4
 
@@ -25,10 +27,13 @@
   #define BN_AVAILABLE(n) _SFR_MEM8(B_START + (B_SIZE * n) + 2)
   #define BN_BASE(n) ((uint8_t*)(B_START + (B_SIZE * n) + 3))
 
+  /* ----- PUBLIC PROTOTYPES----- */
+
   void b_init(uint8_t b_id);
   bool b_putc(uint8_t b_id, uint8_t val);
   bool b_getc(uint8_t b_id, uint8_t* valPtr);
   bool b_isEmpty(uint8_t b_id);
   uint8_t b_get_available(uint8_t b_id);
+  
 #endif
 

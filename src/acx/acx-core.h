@@ -38,16 +38,20 @@
       uint8_t addr[2];
     } PTU;
 
-    // ACX function prototypes
-    void x_init(void);
+    // Private ACX function prototypes.
     void x_init_system_timer(void);
+    void x_schedule(void);
+
+    // Public ACX function prototypes.
+    void x_init(void);
     void x_new(uint8_t, PTHREAD, bool);
     void x_yield(void);
-    void x_schedule(void);
     void x_delay(uint16_t);
     void x_delay_usec(uint8_t);
     void x_disable(uint8_t);
     void x_enable(uint8_t);
     void x_crash(void);
+    
   #endif
+
 #endif

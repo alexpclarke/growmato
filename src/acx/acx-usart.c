@@ -66,14 +66,6 @@ void x_usart_putc(uint8_t data) {
   UCSR0B |= _BV(UDRIE0);
 }
 
-void x_usart_putc_hex(uint8_t data) {
-  // TODO
-}
-
-void x_usart_putc_bin(uint8_t data) {
-  // TODO
-}
-
 // Sends a null terminated string over USART, returning the number of values
 // sent.
 // TODO: does this need to return the number? Barry's version did but i dont
