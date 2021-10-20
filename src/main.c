@@ -32,30 +32,21 @@ void USART_echo() {
 }
 
 void LCD() {
-  DDRB |= _BV(DDB0) | _BV(DDB1) | _BV(DDB2);
-
   LCD_init();
   LCD_set_backlight(true);
-  LCD_gotoxy(3, 3);
-
-  // LCD_write_command(LCD_CURSORSHIFT);
-
-  // LCD_gotoxy(3, 3);
-  // LCD_putc('c');
-
-  // LCD_gotoxy(2, 4);
-
-  // bool backlight = true;
+  LCD_set_pos(3, 2);
+  LCD_putc('x');
+  LCD_putc('y');
+  LCD_putc('z');
 
   while (1) {
-    // LCD_putc('x');
-    // LCD_set_backlight(backlight);
-    // backlight = !backlight;
     x_delay(2000);
   }
 }
 
 int main(void) {
+  DDRB |= _BV(DDB0) | _BV(DDB1) | _BV(DDB2);
+
   x_init();
   x_usart_init(9600, 8, P_NONE, 1, false);
   x_twi_init();

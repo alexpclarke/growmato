@@ -48,5 +48,6 @@
     void x_delay_usec(uint8_t);
     void x_disable(uint8_t);
     void x_enable(uint8_t);
+    void x_crash(void);
   #endif
 #endif

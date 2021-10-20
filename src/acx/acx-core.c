@@ -127,6 +127,15 @@ void x_enable(uint8_t tid) {
   return;
 }
 
+// Handles a crash event.
+void x_crash() {
+  // Turn on the red LED.
+  PORTB |= _BV(DDB0);
+
+  // Go into infinite loop.
+  while (1);
+}
+
 // This interrupt is triggered every 1 msec based on TIMER0 COMPARE MATCH.
 ISR(TIMER0_COMPA_vect) {
   // For each delayed thread, decrement its counter and if the counter is at
