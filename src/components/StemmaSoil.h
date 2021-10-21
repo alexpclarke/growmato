@@ -8,4 +8,8 @@
     #define STEMMASOIL_STATUS_TEMP 0x04
     #define STEMMASOIL_TOUCH_BASE 0x0F
     #define STEMMASOIL_TOUCH_CHANNEL_OFFSET 0x10
+
+    float getTemp();
+    char * floatToString(float val);
+
 #endif
