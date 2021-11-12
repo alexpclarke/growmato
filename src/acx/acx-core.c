@@ -130,10 +130,7 @@ void x_enable(uint8_t tid) {
 // Handles a crash event.
 void x_crash() {
   // Turn on the red LED.
-  PORTB |= _BV(DDB0);
-
-  // Go into infinite loop.
-  while (1);
+  LED_setR(LED_FLASH);
 }
 
 // This interrupt is triggered every 1 msec based on TIMER0 COMPARE MATCH.

@@ -1,9 +1,9 @@
+#include "acx/acx.h"
+#include "acx/acx-twi.h"
+#include "components/pcf8574.h"
+
 #ifndef LCD_H_
   #define LCD_H_
-
-  #include "acx/acx.h"
-  #include "acx/acx-twi.h"
-  #include "components/PCF8574.h"
 
   #define LCD_ADDRESS 0x27
   #define LCD_COLS    20

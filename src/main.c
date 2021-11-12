@@ -1,11 +1,22 @@
 /* ----- Includes ----- */
 #include "acx/acx.h"
 #include "components/LCD.h"
+#include "components/LED.h"
+#include "MachineData.h"
 
-void flash() {
-  DDRB |= _BV(DDB5);
+
+
+void flashLED() {
+  DDRB |= _BV(DDB0) | _BV(DDB1) | _BV(DDB2);
   while (1) {
-    PORTB ^= _BV(PORTB5);
+    PORTB &= ~_BV(PORTB2);
+    PORTB |= _BV(PORTB0);
+    x_delay(500);
+    PORTB &= ~_BV(PORTB0);
+    PORTB |= _BV(PORTB1);
+    x_delay(500);
+    PORTB &= ~_BV(PORTB1);
+    PORTB |= _BV(PORTB2);
     x_delay(500);
   }
 }
@@ -44,6 +55,17 @@ void LCD() {
   }
 }
 
+void esp8266() {
+  if (!esp8266_init()) {
+    x_usart_puts("ERR: esp init.\n");
+    x_crash();
+  }
+
+  while (true) {
+    
+  }
+}
+
 int main(void) {
   DDRB |= _BV(DDB0) | _BV(DDB1) | _BV(DDB2);
 
@@ -52,6 +74,7 @@ int main(void) {
   x_twi_init();
   
   x_new(1, flash, true);
+  x_new(2, flashLED, true);
   // x_new(2, USART_echo, true);
   x_new(0, LCD, true);
 

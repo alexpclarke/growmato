@@ -30,6 +30,7 @@
     #include <util/atomic.h>
     #include <stdlib.h>
     #include <stdbool.h>
+    #include "components/LED.h"
 
     // Define the function/thread pointer.
     typedef void (*PTHREAD)(void);
