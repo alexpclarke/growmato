@@ -11,5 +11,6 @@
 
     float getTemp();
     char * floatToString(float val);
-
+    //uint16_t getMoist(uint8_t pin);
+    uint16_t getMoist();
 #endif

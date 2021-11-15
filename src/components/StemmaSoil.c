@@ -37,7 +37,7 @@ float getTemp() {
 }
 
 // UwU
-//uint32_t getMoist() {
+uint16_t getMoist() {
     /*def moisture_read(self):
         """Read the value of the moisture sensor"""
         buf = bytearray(2)
@@ -45,7 +45,7 @@ float getTemp() {
         self.read(_TOUCH_BASE, _TOUCH_CHANNEL_OFFSET, buf, 0.005)
         ret = struct.unpack(">H", buf)[0]
         time.sleep(0.001)
-
+    
         # retry if reading was bad
         count = 0
         while ret > 4095:
@@ -57,8 +57,15 @@ float getTemp() {
                 raise RuntimeError("Could not get a valid moisture reading.")
 
     return ret */
-    //uint8_t buf[2];
-    //uint8_t i;
-    //for (i = 0; i < 3; i++) buf[i] = NULL;
-    
-//}
+    uint8_t buf[2];
+    //uint8_t p = pin;
+    uint16_t ret = 65535;
+
+    for (uint8_t retry = 0; retry < 5; retry++) {
+        if (x_twi_gets(STEMMASOIL_TOUCH_BASE + STEMMASOIL_TOUCH_CHANNEL_OFFSET, buf, 4, true)) {
+            ret = ((uint16_t) buf[0] << 8) | buf[1];
+            break;
+        } else {x_crash();}
+    }
+    return ret;
+}
