@@ -47,7 +47,7 @@ uint16_t getMoist() {
         self.read(_TOUCH_BASE, _TOUCH_CHANNEL_OFFSET, buf, 0.005)
         ret = struct.unpack(">H", buf)[0]
         time.sleep(0.001)
-
+    
         # retry if reading was bad
         count = 0
         while ret > 4095:
