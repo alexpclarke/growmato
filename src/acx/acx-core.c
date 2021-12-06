@@ -130,6 +130,7 @@ void x_enable(uint8_t tid) {
 // Handles a crash event.
 void x_crash() {
   // Turn on the red LED.
+  x_usart_puts("CRASH");
   LED_setR(LED_FLASH);
 }
 

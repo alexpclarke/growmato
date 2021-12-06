@@ -4,6 +4,8 @@
     #include "acx/acx.h"
     #include "acx/acx-twi.h"
 
+    #define STEMMASOIL_ADDRESS  0x36
+
     #define STEMMASOIL_STATUS_BASE 0x00
     #define STEMMASOIL_STATUS_TEMP 0x04
     #define STEMMASOIL_TOUCH_BASE 0x0F
@@ -11,5 +13,6 @@
 
     float getTemp();
     char * floatToString(float val);
-
+    //uint16_t getMoist(uint8_t pin);
+    uint16_t getMoist();
 #endif

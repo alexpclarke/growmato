@@ -12,7 +12,7 @@
   /* ----- GENERAL INFO ----- */
 
   #define TWI_PRESCALAR   0x00
-  #define TWI_FREQUENCY   10000L
+  #define TWI_FREQUENCY   20000L
   #define TWS             (TWSR & 0xF8)
 
   // TWI States.  
@@ -23,6 +23,10 @@
   #define TWI_MTX       4
   #define TWI_SRX       5
   #define TWI_STX       6
+
+  #define TWI_ACK_NONE  0
+  #define TWI_ACK_ACK   1
+  #define TWI_ACK_NACK  2
 
   // Master Statuses.
   #define TWS_START                  0x08   // Start sent

@@ -2,6 +2,7 @@
 
 volatile uint8_t twi_state;
 volatile uint8_t twi_send_stop;
+volatile uint8_t twi_ack;
 
 // Initialize the TWI bus.
 void x_twi_init() {
@@ -104,10 +105,11 @@ bool x_twi_putc(uint8_t address, uint8_t data, bool sendStop) {
 
   // Put the address into the stack.
   uint8_t temp_addr = ((address << 1) & 0b11111110);
+  // uint8_t temp_addr = address;
   b_putc(TWI_TX_BUFFER, temp_addr);
 
   // Copy the data to the buffer.
-  b_putc(TWI_TX_BUFFER, data);  
+  b_putc(TWI_TX_BUFFER, data);
 
   if (twi_state == TWI_REPSTART) {
     uint8_t val;
@@ -127,7 +129,10 @@ bool x_twi_putc(uint8_t address, uint8_t data, bool sendStop) {
     x_twi_start();
   }
 
-  return true;
+  while (twi_ack == TWI_ACK_NONE) x_yield();
+  uint8_t resp = twi_ack;
+  twi_ack = TWI_ACK_NONE;
+  return resp == TWI_ACK_ACK;
 }
 
 bool x_twi_puts(uint8_t address, uint8_t* data, uint8_t length, bool sendStop) {
@@ -168,7 +173,10 @@ bool x_twi_puts(uint8_t address, uint8_t* data, uint8_t length, bool sendStop) {
     x_twi_start();
   }
 
-  return true;
+  while (twi_ack == TWI_ACK_NONE) x_yield();
+  uint8_t resp = twi_ack;
+  twi_ack = TWI_ACK_NONE;
+  return resp == TWI_ACK_ACK;
 }
 
 bool x_twi_getc(uint8_t address, uint8_t* dest, bool send_stop) {
@@ -223,7 +231,10 @@ ISR (TWI_vect) {
       // If there is more data to send, send it, otherwise send a stop signal.
       uint8_t val;
       if (b_getc(TWI_TX_BUFFER, &val)) x_twi_write(val);
-      else x_twi_stop();
+      else {
+        twi_ack = TWI_ACK_ACK;
+        x_twi_stop();
+      }
       break;
     }
     case TWS_REP_START: {
@@ -232,6 +243,8 @@ ISR (TWI_vect) {
       break;
     }
     case TWS_MR_SLA_ACK: {
+      twi_ack = TWI_ACK_ACK;
+      
       // Switch to Master Receiver mode.
       twi_state = TWI_MRX;
 
@@ -246,6 +259,8 @@ ISR (TWI_vect) {
     }
 
     case TWS_MR_DATA_ACK: {
+      twi_ack = TWI_ACK_ACK;
+
       // Push the recieved byte to the rx buffer.
       b_putc(TWI_RX_BUFFER, TWDR);
 
@@ -260,6 +275,8 @@ ISR (TWI_vect) {
     }
 
     case TWS_MR_DATA_NACK: {
+      twi_ack = TWI_ACK_NACK;
+
       // Push the recieved byte to the rx buffer.
       b_putc(TWI_RX_BUFFER, TWDR);
 
@@ -267,6 +284,13 @@ ISR (TWI_vect) {
       x_twi_stop();
       break;
     }
+    case TWS_MT_SLA_NACK:
+    case TWS_MR_SLA_NACK:
+    case TWS_MT_DATA_NACK: {
+      twi_ack = TWI_ACK_NACK;
+      break;
+    }
+
 
     default: {
       x_twi_disable();
