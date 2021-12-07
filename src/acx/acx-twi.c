@@ -96,6 +96,7 @@ void x_twi_nack() {
 bool x_twi_putc(uint8_t address, uint8_t data, bool sendStop) {
   // Wait untill TWI is ready
   while (!x_twi_is_ready()) x_yield();
+  // while (!x_twi_is_ready()) {};
 
   // Set repstart mode.
   twi_send_stop = sendStop;
@@ -129,7 +130,8 @@ bool x_twi_putc(uint8_t address, uint8_t data, bool sendStop) {
     x_twi_start();
   }
 
-  while (twi_ack == TWI_ACK_NONE) x_yield();
+  // while (twi_ack == TWI_ACK_NONE) x_yield();
+  while (twi_ack == TWI_ACK_NONE) {};
   uint8_t resp = twi_ack;
   twi_ack = TWI_ACK_NONE;
   return resp == TWI_ACK_ACK;
@@ -140,7 +142,8 @@ bool x_twi_puts(uint8_t address, uint8_t* data, uint8_t length, bool sendStop) {
   if (length > B_SIZE) return false;
 
   // Wait untill TWI is ready
-  while (!x_twi_is_ready()) x_yield();
+  // while (!x_twi_is_ready()) x_yield();
+  while (!x_twi_is_ready()) {};
 
   // Set repstart mode.
   twi_send_stop = sendStop;
@@ -173,7 +176,8 @@ bool x_twi_puts(uint8_t address, uint8_t* data, uint8_t length, bool sendStop) {
     x_twi_start();
   }
 
-  while (twi_ack == TWI_ACK_NONE) x_yield();
+  // while (twi_ack == TWI_ACK_NONE) x_yield();
+  while (twi_ack == TWI_ACK_NONE) {};
   uint8_t resp = twi_ack;
   twi_ack = TWI_ACK_NONE;
   return resp == TWI_ACK_ACK;
@@ -191,7 +195,8 @@ bool x_twi_gets(uint8_t address, uint8_t* dest, uint8_t max_length, bool send_st
   b_init(TWI_RX_BUFFER);
 
   // Wait untill TWI is ready
-  while (!x_twi_is_ready()) x_yield();
+  // while (!x_twi_is_ready()) x_yield();
+  while (!x_twi_is_ready()) {};
 
   // Set repstart mode.
   twi_send_stop = send_stop;

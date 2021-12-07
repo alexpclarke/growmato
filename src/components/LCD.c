@@ -59,8 +59,8 @@ void LCD_init() {
   LCD_write(LCD_ENTRYMODESET | LCD_EM_NOSHIFT | LCD_EM_INC, LCD_RS_IR);
 
   // Set display control.
-  LCD_write(LCD_DISPLAYCONTROL | LCD_DC_DISPLAYON | LCD_DC_CURSORON
-    | LCD_DC_BLINKON, LCD_RS_IR);
+  LCD_write(LCD_DISPLAYCONTROL | LCD_DC_DISPLAYON | LCD_DC_CURSOROFF
+    | LCD_DC_BLINKOFF, LCD_RS_IR);
 
   // Reset values.
   LCD_set_wrap(false);
@@ -223,6 +223,11 @@ bool LCD_putc(char c) {
 
 // Write a string to the LCD.
 uint8_t LCD_puts(char* s) {
+  char* ptr = s;
+  while (*ptr != '\0') {
+    LCD_putc(*ptr);
+    ptr++;
+  }
   return 0;
 }
 

@@ -14,9 +14,7 @@
   void LED_setB(uint8_t mode);
   void LED_thread(void);
 
-  volatile uint8_t LED_R;
-  volatile uint8_t LED_G;
-  volatile uint8_t LED_B;
+  
   
 
 #endif
