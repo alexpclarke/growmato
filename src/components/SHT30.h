@@ -12,5 +12,4 @@
   void SHT30_init(void);
   void SHT30_read();
   uint8_t SHT30_CRC8(uint8_t vals[2]);
-
 #endif

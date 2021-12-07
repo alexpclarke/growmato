@@ -6,6 +6,26 @@ volatile uint8_t dataport = 0;
 volatile bool LCD_backlight;
 volatile bool LCD_wrap;
 
+void LCD_thread() {
+  LCD_init();
+  LCD_set_backlight(true);
+  LCD_set_pos(1, 0);
+  LCD_puts("- Growmato  v1.1 -");
+
+  LCD_set_pos(0, 1);
+  LCD_puts("Temp: XXXF");
+  LCD_set_pos(0, 2);
+  LCD_puts("RH:   000%");
+
+  while (1) {
+    x_delay(2000);
+    LCD_set_pos(6, 1);
+    LCD_puts("420");
+    LCD_set_pos(6, 2);
+    LCD_puts(" 69");
+  }
+}
+
 // Initializes the LCD.
 void LCD_init() {
   // Initialize the pcf8574.

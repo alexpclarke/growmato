@@ -72,6 +72,7 @@
   void LCD_write(uint8_t data, uint8_t rs);
 
   // Public prototypes.
+  void LCD_thread(void);
   void LCD_init(void);
   void LCD_get_pos(uint8_t* x, uint8_t* y);
   void LCD_set_backlight(bool val);
@@ -82,8 +83,4 @@
   uint8_t LCD_puts(char* s);
   // void LCD_clear_CGRAM(void);
   // uint8_t LCD_create_custom_char(uint8_t charnum, const uint8_t * values);
-  
-
-  uint8_t LCD_create_custom_char(uint8_t charnum, const uint8_t * values);
-  void LCD_clear_CGRAM();
 #endif

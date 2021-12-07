@@ -6,7 +6,7 @@ void SHT30_thread() {
   while (1) {
     SHT30_read();
 
-    uint8_t buf[4];
+    char buf[4];
     intToString((int)(myEnv.AirTempF), buf, 4);
     x_usart_puts(buf);
     x_usart_putc('\n');
@@ -37,11 +37,11 @@ void SHT30_read() {
   uint16_t response_rh = *((uint16_t*)(response + 3));
 
   if (SHT30_CRC8(response) == response[2]) {
-    myEnv.AirTempF = -49 + 315 * (response_temp / 0xFFFF);
+    myEnv.AirTempF = -49 + 315 * ((float)response_temp / 0xFFFF);
   }
 
   if (SHT30_CRC8(response + 3) == response[5]) {
-    myEnv.AirRH = 315 * (response_rh / 0xFFFF);
+    myEnv.AirRH = 315 * ((float)response_rh / 0xFFFF);
   }
 }
 
