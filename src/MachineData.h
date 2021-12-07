@@ -34,9 +34,11 @@
 
   typedef struct EnvironmentData_ {
     int SoilMoisture;
-    int AirTemp;
+    float AirTempF;
+    float AirRH;
   } EnvironmentData;
 
   volatile MachineSettings myMachine;
+  volatile EnvironmentData myEnv;
 
 #endif

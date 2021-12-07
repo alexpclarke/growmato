@@ -12,8 +12,17 @@ void LCD_thread() {
   LCD_set_pos(1, 0);
   LCD_puts("- Growmato  v1.1 -");
 
+  LCD_set_pos(0, 1);
+  LCD_puts("Temp: XXXF");
+  LCD_set_pos(0, 2);
+  LCD_puts("RH:   000%");
+
   while (1) {
     x_delay(2000);
+    LCD_set_pos(6, 1);
+    LCD_puts("420");
+    LCD_set_pos(6, 2);
+    LCD_puts(" 69");
   }
 }
 
@@ -35,4 +44,4 @@ int main(void) {
   x_new(0, esp8266_thread, true);
 }
 
-
+void floatToInt();

@@ -1,0 +1,1 @@
+void intToString(int val, char* buf, int maxsize);

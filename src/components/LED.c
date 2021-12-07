@@ -9,8 +9,6 @@ void LED_init () {
   LED_R = LED_OFF;
   LED_G = LED_OFF;
   LED_B = LED_OFF;
-
-  LED_setR(LED_FLASH);
 }
 
 void LED_setR (uint8_t mode) {
@@ -29,9 +27,9 @@ void LED_thread() {
   LED_init();
   
   while (1) {
-    if (LED_G == LED_ON) {
+    if (LED_B == LED_ON) {
       PORTB |= _BV(DDB0);
-    } else if (LED_G == LED_FLASH) {
+    } else if (LED_B == LED_FLASH) {
       PORTB ^= _BV(DDB0);
     } else {
       PORTB &= ~_BV(DDB0);
@@ -45,9 +43,9 @@ void LED_thread() {
       PORTB &= ~_BV(DDB1);
     }
 
-    if (LED_B == LED_ON) {
+    if (LED_G == LED_ON) {
       PORTB |= _BV(DDB2);
-    } else if (LED_B == LED_FLASH) {
+    } else if (LED_G == LED_FLASH) {
       PORTB ^= _BV(DDB2);
     } else {
       PORTB &= ~_BV(DDB2);
