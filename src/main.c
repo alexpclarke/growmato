@@ -4,6 +4,7 @@
 #include "components/LED.h"
 #include "components/StemmaSoil.h"
 #include "components/esp8266.h"
+#include "components/SHT30.h"
 #include "MachineData.h"
 
 void LCD_thread() {
@@ -37,7 +38,7 @@ int main(void) {
   x_usart_init(9600, 8, P_NONE, 1, false);
   x_twi_init();
 
-  // x_new(4, SHT30_thread, true);
+  x_new(4, SHT30_thread, true);
   // x_new(3, StemmaSoil_thread, true);
   x_new(2, LED_thread, true);
   x_new(1, LCD_thread, true);
