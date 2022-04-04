@@ -1,6 +1,7 @@
 #include "acx/acx.h"
 #include "acx/acx-twi.h"
 #include "components/pcf8574.h"
+#include "MachineData.h"
 
 #ifndef LCD_H_
   #define LCD_H_

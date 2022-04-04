@@ -11,6 +11,7 @@
     #define STEMMASOIL_TOUCH_BASE 0x0F
     #define STEMMASOIL_TOUCH_CHANNEL_OFFSET 0x10
 
+    void StemmaSoil_thread(void);
     float getTemp();
     char * floatToString(float val);
     //uint16_t getMoist(uint8_t pin);

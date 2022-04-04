@@ -4,6 +4,12 @@
 float temp;
 char* tempStr;
 
+void StemmaSoil_thread() {
+    while (1) {
+        x_yield();
+    }
+}
+
 void StemmaSoil_init() {
     temp = getTemp();
     tempStr = floatToString(temp);

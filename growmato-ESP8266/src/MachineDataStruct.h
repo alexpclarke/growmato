@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <stdbool.h>
-
 #ifndef MACHINE_DATA_H_
   #define MACHINE_DATA_H_
 
@@ -10,11 +7,10 @@
 
   #define ESP8266_CMD_INIT        0x01
   #define ESP8266_CMD_UPDATE_ENV  0x02
-  #define ESP8266_CMD_READ_UPDATE 0x03
 
   typedef struct NetworkSettings_ {
-    char SSID[32];
-    char pass[32];
+    String SSID;
+    String pass;
     uint32_t timeout;
   } NetworkSettings;
 
@@ -26,7 +22,7 @@
   } EnvironmentSettings;
 
   typedef struct MachineSettings_ {
-    char name[20];
+    String name;
     uint8_t flags;
     NetworkSettings net;
     EnvironmentSettings env;
@@ -34,11 +30,7 @@
 
   typedef struct EnvironmentData_ {
     int SoilMoisture;
-    float AirTempF;
-    float AirRH;
+    int AirTemp;
   } EnvironmentData;
-
-  volatile MachineSettings myMachine;
-  volatile EnvironmentData myEnv;
 
 #endif

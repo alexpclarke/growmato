@@ -1,0 +1,136 @@
+body {
+  margin: 0;
+  background-color: #FF6347;
+  font-family: Helvetica, sans-serif;
+}
+h1, h2, h3 {margin: 0;}
+textarea, select, input, button {outline: none;}
+
+#header {
+  padding: 20px;
+}
+#header h1,
+#header h2 {
+  text-align: center;
+  color: white;
+  font-weight: normal;
+}
+#header h1 {
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  font-size: 40px;
+}
+#header h2 {
+  font-size: 20px;
+}
+
+#container {
+  overflow: auto;
+  width: 860px;
+  margin: auto;
+  padding: 15px
+}
+#container .col {
+  width: 400px;
+  float: left;
+  margin: 15px;
+  color: #FFFFFF;
+}
+#container .col h3 {
+  text-align: center;
+  font-size: 26px;
+  margin: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+#container .col label {
+  font-size: 20px;
+  color: inherit;
+  cursor: pointer;
+}
+#container .col input[type="text"],
+#container .col input[type="password"],
+#container .col select {
+  margin-bottom: 24px;
+  margin-top: 5px;
+  font-size: 20px;
+  line-height: 1.5;
+  padding: 5px 10px;
+  border: 3px solid;
+  border-color: #FFFFFF;
+  background: transparent;
+  box-sizing: border-box;
+  color: inherit;
+  height: 46px;
+  width: 400px;
+}
+
+#container .col input[type="text"]:hover, 
+#container .col input[type="password"]:hover,
+#container .col select:hover {
+  border-color: #e64124;
+}
+#container .col input[type="text"]::placeholder,
+#container .col input[type="password"]::placeholder {
+  color: #cc1f00;
+}
+#container .col input[type="text"]:focus,
+#container .col input[type="password"]:focus,
+#container .col select:active {
+  border-color: #cc1f00;
+}
+
+
+
+
+#container #col3 {
+  width: 830px;
+}
+#container #col3 table {
+  border-collapse: collapse;
+  margin: auto;
+  border: 3px solid #FFFFFF;
+  color: #FFFFFF;
+  width: 100%;
+}
+#container #col3 table th, 
+#container #col3 table td {
+  border: 3px solid #FFFFFF;
+  padding: none;
+  padding: 5px 10px;
+  text-align: center;
+}
+#container #col3 table td input {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  width: auto;
+}
+
+#container #col4 {
+  width: 830px;
+  padding: 24px 0px;
+}
+#container #col4 button {
+  font-size: 20px;
+  line-height: 1.5;
+  padding: 5px 10px;
+  border: 3px solid;
+  border-color: #FFFFFF;
+  background: transparent;
+  box-sizing: border-box;
+  color: inherit;
+  height: 46px;
+  width: 400px;
+  float: left;
+  cursor: pointer;
+}
+#container #col4 button:hover {
+  border-color: #e64124;
+}
+#container #col4 button:active {
+  border-color: #cc1f00;
+}
+#container #col4 button:not(:first-child) {
+  margin-left: 30px;
+}

@@ -12,6 +12,7 @@ int main(void) {
   x_usart_init(9600, 8, P_NONE, 1, false);
   x_twi_init();
 
+  x_new(4, StemmaSoil_thread, true);
   x_new(3, SHT30_thread, true);
   x_new(2, LED_thread, true);
   x_new(1, LCD_thread, true);

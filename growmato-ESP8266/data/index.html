@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Growmato</title>
+  </head>
+  <body>
+    <div id="header">
+      <h1>Growmato</h1>
+      <h2>by: Alex & Eli</h2>
+    </div>
+    <div id="container">
+      <div class="col">
+        <h3>System Settings</h3>
+
+        <label for="device_name">Device Name</label>
+        <input type="text" id="device_name" name="device_name" value="%DEVICE_NAME%">
+  
+        <label for="lcd_backlight">LCD Backlight</label>
+        <select name="lcd_backlight" id="lcd_backlight" >%SELECT_BACKLIGHT%</select>
+
+        <label for="status_led">Status LEDs</label>
+        <select name="status_led" id="status_led">%SELECT_LED%</select>
+      </div>
+      <div class="col">
+        <h3>Network Settings</h3>
+
+        <label for="network_ssid">SSID</label>
+        <input type="text" id="network_ssid" name="network_ssid" placeholder="My Network" value="%NET_SSID%">
+  
+        <label for="network_pass">Password</label>
+        <input type="password" id="network_pass" name="network_pass" placeholder="password123" value="%NET_PASS%">
+
+        <label for="network_timeout">Timeout (s)</label>
+        <input type="text" id="network_timeout" name="network_timeout" placeholder="0" value="%NET_TIMEOUT%">
+      </div>
+      <div class="col" id="col3">
+        <h3>Environment Settings</h3>
+        <table>
+          <tr>
+            <th>Value</th>
+            <th>Actual</th>
+            <th>Ideal</th>
+            <th>Tolerance</th>
+          </tr>
+          <tr>
+            <td>Soil Moisture</td>
+            <td>XXX%</td>
+            <td><input type="text">%</td>
+            <td>&pm;<input type="text">%</td>
+          </tr>
+          <tr>
+            <td>Air Humidity Moisture</td>
+            <td>XXX%</td>
+            <td><input type="text">%</td>
+            <td>&pm;<input type="text">%</td>
+          </tr>
+          <tr>
+            <td>Air Temperature</td>
+            <td>XXX &deg;F</td>
+            <td><input type="text">&deg;F</td>
+            <td>&pm;<input type="text">&deg;F</td>
+          </tr>
+        </table>
+      </div>
+      <div class="col" id="col4">
+        <button>Reset</button>
+        <button>Update</button>
+      </div>
+    </div>
+
+    <div id="footer"></div>
+    <script type="text/javascript" src="script.js"></script>
+  </body>
+</html>

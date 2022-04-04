@@ -3,6 +3,7 @@
 uint32_t ipAddress;
 
 void esp8266_thread() {
+  LED_setB(LED_FLASH);
   // esp8266_init();
 
   while (1) {

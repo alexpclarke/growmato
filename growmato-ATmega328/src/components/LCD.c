@@ -13,16 +13,20 @@ void LCD_thread() {
   LCD_puts("- Growmato  v1.1 -");
 
   LCD_set_pos(0, 1);
-  LCD_puts("Temp: XXXF");
+  LCD_puts("Temp.:  XXXF");
   LCD_set_pos(0, 2);
-  LCD_puts("RH:   000%");
+  LCD_puts("R.H.:   000%");
+  LCD_set_pos(0, 3);
+  LCD_puts("Moist.: 000%");
 
   while (1) {
     x_delay(2000);
-    LCD_set_pos(6, 1);
-    LCD_puts("420");
-    LCD_set_pos(6, 2);
-    LCD_puts(" 69");
+    LCD_set_pos(8, 1);
+    LCD_puts(intToString(myEnv.AirTempF));
+    LCD_set_pos(8, 2);
+    LCD_puts(intToString(myEnv.AirRH));
+    LCD_set_pos(8, 3);
+    LCD_puts(intToString(myEnv.SoilMoist));
   }
 }
 
